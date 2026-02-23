@@ -485,6 +485,12 @@ require("nvim-tree").setup({
   filters = {
     dotfiles = false,
   },
+  on_attach = function(bufnr)
+    local api = require('nvim-tree.api')
+    api.config.mappings.default_on_attach(bufnr)
+    -- Override C-t inside tree to close instead of going to parent
+    vim.keymap.set('n', '<C-t>', api.tree.close, { buffer = bufnr, noremap = true, silent = true })
+  end,
 })
 
 -- Setup render-markdown

@@ -485,6 +485,9 @@ require("nvim-tree").setup({
   filters = {
     dotfiles = false,
   },
+  update_focused_file = {
+    enable = true,
+  },
   on_attach = function(bufnr)
     local api = require('nvim-tree.api')
     api.config.mappings.default_on_attach(bufnr)

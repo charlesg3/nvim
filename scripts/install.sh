@@ -195,9 +195,9 @@ if [[ "$INSTALL_CLOJURE" == true ]]; then
     fi
 fi
 
-# ── Markdown (treesitter parsers) ────────────────────────────────────────────
+# ── Treesitter parsers ───────────────────────────────────────────────────────
 
-echo -e "\n${CYAN}${BOLD}Markdown${RESET}"
+echo -e "\n${CYAN}${BOLD}Treesitter parsers${RESET}"
 
 PARSER_DIR="$HOME/.local/share/nvim/site/parser"
 mkdir -p "$PARSER_DIR"
@@ -228,6 +228,7 @@ install_ts_parser() {
 
 install_ts_parser "markdown" "tree-sitter-markdown/tree-sitter-markdown"
 install_ts_parser "markdown_inline" "tree-sitter-markdown_inline/tree-sitter-markdown-inline"
+install_ts_parser "yaml" "tree-sitter-yaml/tree-sitter-yaml"
 
 # ── Nerd Font (required for airline arrows + nvim-tree icons) ────────────────
 

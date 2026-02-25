@@ -191,14 +191,13 @@ tnoremap <C-w>j <C-\><C-n><C-w>j
 tnoremap <C-w>k <C-\><C-n><C-w>k
 tnoremap <C-w>l <C-\><C-n><C-w>l
 
-" Don't let C-e open TlistToggle when in terminal mode
-tnoremap <C-e> <Nop>
-
 " In a terminal buffer's normal mode, send Up/Down/Enter to the terminal instead of moving cursor
+" C-e is a no-op in normal mode (don't trigger TlistToggle), but passes through in terminal mode
 function! s:TermNormalMappings()
   nnoremap <buffer> <Up>   i<Up><C-\><C-n>
   nnoremap <buffer> <Down> i<Down><C-\><C-n>
   nnoremap <buffer> <CR>   i<CR><C-\><C-n>
+  nnoremap <buffer> <C-e>  <Nop>
 endfunction
 autocmd TermOpen * call s:TermNormalMappings()
 command! TermNormalMappings call s:TermNormalMappings()

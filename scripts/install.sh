@@ -81,6 +81,7 @@ echo -e "${DIM}Options: python=$INSTALL_PYTHON, clojure=$INSTALL_CLOJURE, go=$IN
 
 echo -e "${CYAN}${BOLD}Core${RESET}"
 check_or_install git
+check_or_install expect
 # universal-ctags (supports markdown; macOS is keg-only so check explicit path)
 if [[ "$OS" == "Darwin" ]]; then
     if [[ -x /opt/homebrew/opt/universal-ctags/bin/ctags || -x /usr/local/opt/universal-ctags/bin/ctags ]]; then

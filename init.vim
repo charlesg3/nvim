@@ -170,6 +170,11 @@ nnoremap <silent> <S-k> @='10k'<CR>|xnoremap <silent> K @='10k'<CR>|
 " Get back some way of joining lines
 nmap <silent> <S-f> :s/\n\s*//<CR>:noh<CR>
 
+" Ctrl+V to paste from system clipboard (normal: after cursor, insert: inline, terminal: feeds to shell)
+nnoremap <C-v> "+p
+inoremap <C-v> <C-r>+
+tnoremap <C-v> <C-\><C-n>"+pi
+
 " Map C-g to escape, b/c it's close and it's like emacs
 nnoremap <silent> <C-g> <Esc>:nohlsearch<bar>pclose<CR>|
 vnoremap <C-g> <Esc><Nul>| " <Nul> added to fix select mode problem
@@ -185,6 +190,18 @@ tnoremap <C-w>h <C-\><C-n><C-w>h
 tnoremap <C-w>j <C-\><C-n><C-w>j
 tnoremap <C-w>k <C-\><C-n><C-w>k
 tnoremap <C-w>l <C-\><C-n><C-w>l
+
+" Don't let C-e open TlistToggle when in terminal mode
+tnoremap <C-e> <Nop>
+
+" In a terminal buffer's normal mode, send Up/Down/Enter to the terminal instead of moving cursor
+function! s:TermNormalMappings()
+  nnoremap <buffer> <Up>   i<Up><C-\><C-n>
+  nnoremap <buffer> <Down> i<Down><C-\><C-n>
+  nnoremap <buffer> <CR>   i<CR><C-\><C-n>
+endfunction
+autocmd TermOpen * call s:TermNormalMappings()
+command! TermNormalMappings call s:TermNormalMappings()
 
 " Macros (replay the macro recorded by qq)
 nnoremap Q @q|
@@ -478,6 +495,8 @@ require("nvim-tree").setup({
   },
   view = {
     width = 30,
+    signcolumn = "no",
+    debounce_delay = 100,
   },
   renderer = {
     group_empty = true,

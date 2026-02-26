@@ -84,6 +84,11 @@
 | `q` | Stop recording |
 | `Q` | Replay last macro |
 
+## Clipboard
+| Key | Action |
+|-----|--------|
+| `<C-v><C-v>` | Paste from system clipboard (normal: after cursor, insert: inline, terminal: to shell) |
+
 ## Escape / Cancel
 | Key | Action |
 |-----|--------|

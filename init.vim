@@ -170,10 +170,11 @@ nnoremap <silent> <S-k> @='10k'<CR>|xnoremap <silent> K @='10k'<CR>|
 " Get back some way of joining lines
 nmap <silent> <S-f> :s/\n\s*//<CR>:noh<CR>
 
-" Ctrl+V to paste from system clipboard (normal: after cursor, insert: inline, terminal: feeds to shell)
-nnoremap <C-v> "+p
-inoremap <C-v> <C-r>+
-tnoremap <C-v> <C-\><C-n>"+pi
+" Ctrl+V+V to paste from system clipboard (normal: after cursor, insert: inline, terminal: feeds to shell)
+" Single Ctrl+V is left free for visual block selection
+nnoremap <C-v><C-v> "+p
+inoremap <C-v><C-v> <C-r>+
+tnoremap <C-v><C-v> <C-\><C-n>"+pi
 
 " Map C-g to escape, b/c it's close and it's like emacs
 nnoremap <silent> <C-g> <Esc>:nohlsearch<bar>pclose<CR>|

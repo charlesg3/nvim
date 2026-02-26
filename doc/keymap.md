@@ -17,7 +17,7 @@
 ## General
 | Key | Action |
 |-----|--------|
-| `km` | Open keymap reference (this file) |
+| `gm` | Open keymap reference (this file) |
 | `tt` | Open terminal in vertical split to the right |
 
 ## File & Buffer Navigation

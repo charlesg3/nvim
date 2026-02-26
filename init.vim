@@ -211,7 +211,7 @@ nmap <F3> gg=G
 nmap \\p [p
  
 command! Keymap :e $HOME/.config/nvim/doc/keymap.md
-nmap km :Keymap<CR>
+nmap gm :Keymap<CR>
 nmap tt :rightbelow vsplit \| terminal<CR>:startinsert<CR>
 
 "re-source this file
@@ -495,8 +495,6 @@ require("nvim-tree").setup({
   },
   view = {
     width = 30,
-    signcolumn = "no",
-    debounce_delay = 100,
   },
   renderer = {
     group_empty = true,

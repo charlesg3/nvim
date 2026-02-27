@@ -38,7 +38,7 @@ elif [[ "$CURRENT" == "$LATEST" ]]; then
 elif [[ "$OS" == "Darwin" ]]; then
     warn "nvim ${YELLOW}$CURRENT → $LATEST${RESET}, upgrading via brew..."
     brew upgrade neovim 2>/dev/null \
-        && ok "nvim ${GREEN}$LATEST${RESET} ${DIM}(updated from $CURRENT)${RESET}" \
+        && updated "nvim ${YELLOW}$CURRENT → $LATEST${RESET}" \
         || err "nvim update failed"
 else
     warn "nvim ${YELLOW}$CURRENT → $LATEST${RESET}, downloading..."
@@ -47,7 +47,7 @@ else
     if curl -fsSLo "$TMP/nvim.tar.gz" \
         "https://github.com/neovim/neovim/releases/latest/download/nvim-linux-${ARCH}.tar.gz"; then
         sudo tar -xzf "$TMP/nvim.tar.gz" -C /usr/local --strip-components=1
-        ok "nvim ${GREEN}$LATEST${RESET} ${DIM}(updated from $CURRENT)${RESET}"
+        updated "nvim ${YELLOW}$CURRENT → $LATEST${RESET}"
     else
         err "nvim download failed"
     fi
@@ -71,10 +71,10 @@ for bundle_path in "$NVIM_DIR/bundle"/*/; do
         after_sha="$(git -C "$bundle_path" rev-parse --short HEAD 2>/dev/null || echo "?")"
         _clear_spin
         if [[ -z "$before_sha" ]]; then
-            ok "$name ${DIM}$after_sha${RESET}"
+            updated "$name ${DIM}$after_sha${RESET}"
             updated_plugins+=("$name")
         elif [[ "$before_sha" != "$after_sha" ]]; then
-            ok "$name ${DIM}$after_sha${RESET} ${DIM}(was $before_sha)${RESET}"
+            updated "$name ${YELLOW}$before_sha → $after_sha${RESET}"
             updated_plugins+=("$name")
         else
             ok "$name ${DIM}$after_sha${RESET}"

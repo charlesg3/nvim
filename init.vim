@@ -213,7 +213,7 @@ nmap \\p [p
 command! Keymap :e $HOME/.config/nvim/doc/keymap.md
 nmap gm :Keymap<CR>
 nmap tt :rightbelow vsplit \| terminal<CR>:startinsert<CR>
-nmap tc :rightbelow vsplit \| terminal<CR>:startinsert<CR>claude<CR>
+nmap tc :rightbelow vsplit \| terminal<CR>:startinsert<CR>claude --dangerously-skip-permissions<CR>
 
 "re-source this file
 " Only define function if it doesn't exist (so it persists across reloads)

@@ -58,3 +58,6 @@
 [submodule "bundle/vim-projectionist"]
 	path = bundle/vim-projectionist
 	url = https://github.com/tpope/vim-projectionist.git
+[submodule "bundle/nvim-notify"]
+	path = bundle/nvim-notify
+	url = https://github.com/rcarriga/nvim-notify

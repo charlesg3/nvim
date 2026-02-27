@@ -485,6 +485,11 @@ vim.api.nvim_create_autocmd('FileType', {
   end,
 })
 
+-- Setup nvim-notify
+local notify = require('notify')
+notify.setup({ timeout = 3000, render = 'compact' })
+vim.notify = notify
+
 -- Setup nvim-web-devicons
 require('nvim-web-devicons').setup()
 
@@ -583,6 +588,17 @@ end
 set_markdown_highlights()
 vim.api.nvim_create_autocmd('VimEnter',    { callback = set_markdown_highlights })
 vim.api.nvim_create_autocmd('ColorScheme', { callback = set_markdown_highlights })
+
+-- notify_done: called via nvim --server RPC when a shell `notify` wrapper finishes.
+-- Usage from shell: nvim --server "$NVIM" --remote-expr "v:lua.notify_done('cmd', code)"
+_G.notify_done = function(cmd, code)
+  vim.schedule(function()
+    local icon  = code == 0 and '✓' or '✗'
+    local level = code == 0 and vim.log.levels.INFO or vim.log.levels.WARN
+    vim.notify(icon .. ' ' .. cmd .. ' done', level)
+  end)
+  return ''
+end
 EOF
 
 " nvim-tree keybindings

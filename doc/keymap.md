@@ -19,6 +19,7 @@
 |-----|--------|
 | `gm` | Open keymap reference (this file) |
 | `tt` | Open terminal in vertical split to the right |
+| `tc` | Open terminal in vertical split and launch Claude |
 
 ## File & Buffer Navigation
 | Key | Action |

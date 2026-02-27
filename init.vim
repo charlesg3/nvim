@@ -30,14 +30,11 @@ set ww=<,>,[,],h,l,b,s,~        " normal cursor movement
 set guioptions-=T               " no toolbar 
 set background=dark
 set novisualbell
+set termguicolors
 
-
-colorscheme cg3
+colorscheme panda
 syntax on
-syntax enable                      " enable syntax highlighting
-"let $NVIM_TUI_ENABLE_TRUE_COLOR=1
-hi normal   ctermfg=white  ctermbg=black guifg=white  guibg=black
-hi nontext  ctermfg=blue   ctermbg=black guifg=blue   guibg=black
+syntax enable
 
 filetype on                     " understand the file type
 filetype plugin indent on
@@ -342,14 +339,16 @@ au Syntax * RainbowParenthesesLoadBraces
 
 let g:airline#extensions#tabline#enabled = 1
 let g:airline_powerline_fonts = 1
-let g:airline_theme='dark'
+let g:airline_theme='panda'
 
 let g:airline#extensions#hunks#enabled = 0
 let g:airline#extensions#whitespace#enabled = 0
 
 function! AirLineCG3()
-  call airline#parts#define_raw('filename', '%<%f %{&modified ? "+":""}')
+  " 󰉋 = nf-md-folder; shows parent-dir/filename like the Claude statusline
+  call airline#parts#define_raw('filename', '󰉋  %{expand("%:p:h:t")}/%{expand("%:t")}%{&modified ? " +" : ""}')
 
+  let g:airline_inactive_collapse = 0   " show folder icon in inactive windows too
   let g:airline_section_b = airline#section#create_left(['filename'])
   let g:airline_section_gutter = airline#section#create(['%='])
   let g:airline_section_c = airline#section#create([''])

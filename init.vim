@@ -590,12 +590,16 @@ vim.api.nvim_create_autocmd('VimEnter',    { callback = set_markdown_highlights 
 vim.api.nvim_create_autocmd('ColorScheme', { callback = set_markdown_highlights })
 
 -- notify_done: called via nvim --server RPC when a shell `notify` wrapper finishes.
--- Usage from shell: nvim --server "$NVIM" --remote-expr "v:lua.notify_done('cmd', code)"
-_G.notify_done = function(cmd, code)
+-- Usage from shell: nvim --server "$NVIM" --remote-expr "v:lua.notify_done('cmd', code[, 'msg'])"
+_G.notify_done = function(cmd, code, msg)
   vim.schedule(function()
     local icon  = code == 0 and '✓' or '✗'
     local level = code == 0 and vim.log.levels.INFO or vim.log.levels.WARN
-    vim.notify(icon .. ' ' .. cmd .. ' done', level)
+    local text  = icon .. ' ' .. cmd
+    if msg and msg ~= '' then
+      text = text .. '\n' .. msg
+    end
+    vim.notify(text, level)
   end)
   return ''
 end

@@ -206,9 +206,13 @@ install_ts_parser() {
     fi
 }
 
-install_ts_parser "markdown" "tree-sitter-markdown/tree-sitter-markdown"
+install_ts_parser "markdown"        "tree-sitter-markdown/tree-sitter-markdown"
 install_ts_parser "markdown_inline" "tree-sitter-markdown_inline/tree-sitter-markdown-inline"
-install_ts_parser "yaml" "tree-sitter-yaml/tree-sitter-yaml"
+install_ts_parser "yaml"            "tree-sitter-yaml/tree-sitter-yaml"
+install_ts_parser "bash"            "tree-sitter-bash/tree-sitter-bash"
+install_ts_parser "python"          "tree-sitter-python/tree-sitter-python"
+install_ts_parser "typescript"      "tree-sitter-typescript/typescript"
+install_ts_parser "clojure"         "tree-sitter-clojure/tree-sitter-clojure"
 
 # ── Nerd Font ─────────────────────────────────────────────────────────────────
 

@@ -493,13 +493,15 @@ let g:loaded_netrwPlugin = 1
 set termguicolors
 
 lua << EOF
--- Enable treesitter highlighting for markdown
+-- Enable treesitter highlighting for all filetypes that have a parser
 vim.api.nvim_create_autocmd('FileType', {
-  pattern = 'markdown',
   callback = function(ev)
-    vim.treesitter.start(ev.buf, 'markdown')
+    pcall(vim.treesitter.start, ev.buf)
   end,
 })
+
+-- Rainbow delimiters (treesitter-native, replaces legacy rainbow_parentheses.vim)
+-- Auto-initializes via plugin/rainbow-delimiters.lua; no setup call needed.
 
 -- Setup nvim-notify
 local notify = require('notify')

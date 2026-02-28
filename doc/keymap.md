@@ -41,8 +41,9 @@
 | Key | Action |
 |-----|--------|
 | `<CR>` | Open file / expand directory |
-| `<C-]>` or `cd` | Enter directory (change tree root) |
-| `-` | Go up to parent directory |
+| `<S-CR>` or `<C-]>` | Enter directory (change tree root) |
+| `<BS>` or `-` | Go up to parent directory |
+| `~` | Reset tree root to nvim's working directory |
 | `s` | Open file in OS (macOS: `open`) |
 | `<C-v>` | Open file in vertical split |
 | `<C-x>` | Open file in horizontal split |

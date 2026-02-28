@@ -533,8 +533,20 @@ require("nvim-tree").setup({
   on_attach = function(bufnr)
     local api = require('nvim-tree.api')
     api.config.mappings.default_on_attach(bufnr)
-    -- Override C-t inside tree to close instead of going to parent
-    vim.keymap.set('n', '<C-t>', api.tree.close, { buffer = bufnr, noremap = true, silent = true })
+    local opts = { buffer = bufnr, noremap = true, silent = true }
+    -- Override C-t inside tree to close instead of opening a tab
+    vim.keymap.set('n', '<C-t>', api.tree.close, opts)
+    -- <S-CR>: change tree root to selected directory node
+    vim.keymap.set('n', '<S-CR>', function()
+      local node = api.tree.get_node_under_cursor()
+      if node and node.type == 'directory' then
+        api.tree.change_root_to_node(node)
+      end
+    end, opts)
+    -- <BS>: change tree root to parent directory
+    vim.keymap.set('n', '<BS>', api.tree.change_root_to_parent, opts)
+    -- ~: reset tree root to nvim's current working directory
+    vim.keymap.set('n', '~', function() api.tree.change_root(vim.fn.getcwd()) end, opts)
   end,
 })
 

@@ -402,6 +402,8 @@ let g:EasyMotion_do_mapping = 0 " Disable default mappings
 " Bi-directional find motion
 " `s{char}{char}{label}`
 nmap s <Plug>(easymotion-overwin-f2)
+" In visual mode, s extends the selection to the easymotion target
+xmap s <Plug>(easymotion-bd-f2)
 
 " Turn on case insensitive feature
 let g:EasyMotion_smartcase = 1

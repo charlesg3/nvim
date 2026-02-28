@@ -13,6 +13,7 @@
 | Key | Action |
 |-----|--------|
 | `s` | Jump to any location (type 2 chars, works across all panes) |
+| `v` then `s` | Enter visual mode, then jump to extend selection to target |
 
 ## General
 | Key | Action |

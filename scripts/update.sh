@@ -64,8 +64,8 @@ for bundle_path in "$NVIM_DIR/bundle"/*/; do
     [ -d "$bundle_path" ] || continue
     name="$(basename "$bundle_path")"
 
-    # claude-watcher is a plain git repo under active development, not a submodule
-    if [[ "$name" == "claude-watcher" ]]; then
+    # claude-status is a plain git repo under active development, not a submodule
+    if [[ "$name" == "claude-status" ]]; then
         ok "$name (development checkout — skipped)"
         continue
     fi

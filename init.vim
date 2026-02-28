@@ -133,8 +133,19 @@ set ignorecase
 set smartcase
 
 
-"Switch Buffers with c-n and c-p
-map <C-n> :bn!<CR>
+" Cycle through file buffers only (no-op in terminal/special windows)
+function! s:NextFileBuf()
+  if &buftype !=# '' | return | endif
+  let l:cur = bufnr('%') | let l:last = bufnr('$') | let l:next = l:cur
+  while 1
+    let l:next = l:next % l:last + 1
+    if l:next == l:cur | break | endif
+    if buflisted(l:next) && getbufvar(l:next, '&buftype') ==# ''
+      execute 'buffer ' . l:next | return
+    endif
+  endwhile
+endfunction
+nnoremap <C-n> <Cmd>call <SID>NextFileBuf()<CR>
 ""map <C-p> :bp!<CR>
 
 map <C-p> :CtrlP<CR>
@@ -190,6 +201,7 @@ function! s:TermNormalMappings()
   nnoremap <buffer> <Up>   i<Up><C-\><C-n>
   nnoremap <buffer> <Down> i<Down><C-\><C-n>
   nnoremap <buffer> <CR>   i<CR><C-\><C-n>
+  nnoremap <buffer> <Tab>  i<Tab><C-\><C-n>
   nnoremap <buffer> <C-e>  <Nop>
 endfunction
 autocmd TermOpen * call s:TermNormalMappings()
@@ -257,7 +269,10 @@ match WhitespaceEOL /\\s\\+$/
 hi BeginTabs ctermfg=blue guifg=blue
 match BeginTabs /^[\\t ]*\\t/
 
-set list listchars=tab:>-,trail:.,extends:>,nbsp:_
+set listchars=tab:>-,trail:.,extends:>,nbsp:_
+" Enable list only for real file buffers (buftype=''); excludes terminal, nofile (taglist), help, etc.
+" Uses setlocal so re-sourcing never clobbers special buffers.
+autocmd BufWinEnter * if &buftype ==# '' | setlocal list | else | setlocal nolist | endif
 
 " " Nice statusbar
 set laststatus=2
@@ -464,10 +479,8 @@ inoremap " ""<Left>
 inoremap [ []<Left>
 
 
-"Tab to switch to next open buffer
-nnoremap <Tab> :bnext<cr>
-"Shift + Tab to switch to previous open buffer
-nnoremap <S-Tab> :bprevious<cr>
+"Tab to cycle file buffers (no-op in terminal/special windows)
+nnoremap <Tab> <Cmd>call <SID>NextFileBuf()<CR>
 "leader key twice to cycle between last two open buffers
 nnoremap <leader><leader> <c-^>
 

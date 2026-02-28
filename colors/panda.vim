@@ -29,14 +29,16 @@ let s:selection    = '#31353A'   " selection / line highlight
 
 " ── Semantic aliases ──────────────────────────────────────────────────────────
 let s:keyword  = s:pink
+let s:storage  = s:pink
+let s:import   = s:cyan
 let s:string   = s:lime
 let s:func     = s:blue
 let s:constant = s:orange
-let s:variable = s:light_orange
-let s:operator = s:light_orange
+let s:variable = s:fg
+let s:operator = s:comment
 let s:tag      = s:purple
 let s:escape   = s:light_blue
-let s:comment_col = s:lavender
+let s:comment_col = s:comment
 let s:error    = s:hot_pink
 let s:warning  = s:orange
 let s:info     = s:blue
@@ -68,12 +70,12 @@ call s:hi('Repeat',      s:keyword,  '',           'NONE')
 call s:hi('Label',       s:keyword,  '',           'NONE')
 call s:hi('Exception',   s:error,    '',           'NONE')
 call s:hi('Operator',    s:operator, '',           'NONE')
-call s:hi('PreProc',     s:pink,     '',           'NONE')
-call s:hi('Include',     s:pink,     '',           'NONE')
-call s:hi('Define',      s:pink,     '',           'NONE')
-call s:hi('Macro',       s:pink,     '',           'NONE')
+call s:hi('PreProc',     s:import,   '',           'NONE')
+call s:hi('Include',     s:import,   '',           'NONE')
+call s:hi('Define',      s:import,   '',           'NONE')
+call s:hi('Macro',       s:import,   '',           'NONE')
 call s:hi('Type',        s:tag,      '',           'NONE')
-call s:hi('StorageClass',s:keyword,  '',           'NONE')
+call s:hi('StorageClass',s:storage,  '',           'NONE')
 call s:hi('Structure',   s:tag,      '',           'NONE')
 call s:hi('Typedef',     s:tag,      '',           'NONE')
 call s:hi('Special',     s:escape,   '',           'NONE')
@@ -82,6 +84,7 @@ call s:hi('Underlined',  s:blue,     '',           'underline')
 call s:hi('Error',       s:error,    '',           'NONE')
 call s:hi('Todo',        s:bg,       s:pink,       'bold')
 call s:hi('Ignore',      s:comment,  '',           'NONE')
+call s:hi('Punctuation', s:comment,  '',           'NONE')
 
 " ── UI ────────────────────────────────────────────────────────────────────────
 call s:hi('LineNr',       s:comment,   s:bg,        'NONE')
@@ -165,10 +168,15 @@ hi! link @function             Function
 hi! link @function.call        Function
 hi! link @function.method      Function
 hi! link @function.method.call Function
+hi! link @variable.function    Function
 hi! link @keyword              Keyword
-hi! link @keyword.function     Keyword
+hi! link @keyword.function     StorageClass
 hi! link @keyword.return       Keyword
 hi! link @keyword.operator     Operator
+hi! link @keyword.import       Include
+hi! link @keyword.coroutine    StorageClass
+hi! link @storageclass         StorageClass
+hi! link @include              Include
 hi! link @operator             Operator
 hi! link @type                 Type
 hi! link @type.builtin         Type
@@ -177,13 +185,24 @@ hi! link @variable.parameter   Identifier
 hi! link @variable.member      Identifier
 hi! link @property             Identifier
 hi! link @tag                  Type
-hi! link @punctuation          Normal
-hi! link @punctuation.bracket  Normal
-hi! link @punctuation.delimiter Normal
+hi! link @module               Function
+hi! link @namespace            Function
+hi! link @punctuation          Punctuation
+hi! link @punctuation.bracket  Punctuation
+hi! link @punctuation.delimiter Punctuation
 hi! link @markup.heading       Title
 hi! link @markup.strong        Bold
 hi! link @markup.italic        Italic
 hi! link @markup.raw           Special
+
+" ── Rainbow delimiters ────────────────────────────────────────────────────────
+call s:hi('RainbowDelimiterRed',    s:hot_pink,    '', 'NONE')
+call s:hi('RainbowDelimiterOrange', s:orange,      '', 'NONE')
+call s:hi('RainbowDelimiterYellow', s:light_orange,'', 'NONE')
+call s:hi('RainbowDelimiterGreen',  s:lime,        '', 'NONE')
+call s:hi('RainbowDelimiterCyan',   s:cyan,        '', 'NONE')
+call s:hi('RainbowDelimiterBlue',   s:blue,        '', 'NONE')
+call s:hi('RainbowDelimiterViolet', s:purple,      '', 'NONE')
 
 " ── Neovim :terminal colors ───────────────────────────────────────────────────
 if has('nvim')

@@ -85,8 +85,6 @@ autocmd FileType plaintex set wrap!
 autocmd BufNewFile,BufRead *.joke set filetype=clojure
 " Don't highlight underscores as errors in markdown
 autocmd FileType markdown syn clear markdownError
-autocmd FileType markdown hi link markdownError NONE
-autocmd FileType markdown hi markdownError guifg=NONE ctermfg=NONE guibg=NONE ctermbg=NONE
 autocmd FileType markdown setlocal conceallevel=2 wrap linebreak signcolumn=no
 " Enable folding for markdown based on headings
 autocmd FileType markdown setlocal foldmethod=expr

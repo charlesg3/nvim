@@ -19,9 +19,6 @@
 [submodule "bundle/paredit.vim"]
 	path = bundle/paredit.vim
 	url = https://github.com/vim-scripts/paredit.vim.git
-[submodule "bundle/rainbow_parentheses.vim"]
-	path = bundle/rainbow_parentheses.vim
-	url = https://github.com/kien/rainbow_parentheses.vim.git
 [submodule "bundle/render-markdown.nvim"]
 	path = bundle/render-markdown.nvim
 	url = https://github.com/MeanderingProgrammer/render-markdown.nvim.git
@@ -61,3 +58,6 @@
 [submodule "bundle/nvim-notify"]
 	path = bundle/nvim-notify
 	url = https://github.com/rcarriga/nvim-notify
+[submodule "bundle/rainbow-delimiters.nvim"]
+	path = bundle/rainbow-delimiters.nvim
+	url = https://github.com/HiPhish/rainbow-delimiters.nvim

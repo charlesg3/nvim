@@ -72,9 +72,6 @@ let Tlist_GainFocus_On_ToggleOpen = 1
 let Tlist_Highlight_Tag_On_BufEnter = 1
 let Tlist_Compact_Format = 1
 
-let g:clj_paren_rainbow = 1
-
-
 " autocmd BufEnter * TlistUpdate   " update taglist
 " autocmd BufEnter * call DoWordComplete()
 "noremap <LeftRelease> "+y<LeftRelease>
@@ -223,11 +220,6 @@ if !exists('*ReloadConfig')
         " Refresh airline
         AirlineRefresh
         call AirLineCG3()
-        " Re-enable rainbow parentheses
-        RainbowParenthesesActivate
-        RainbowParenthesesLoadRound
-        RainbowParenthesesLoadSquare
-        RainbowParenthesesLoadBraces
         " Re-enable render-markdown for current buffer
         silent! lua require('render-markdown').enable()
         echo "init.vim reloaded!"
@@ -331,10 +323,6 @@ command! -nargs=0 SetWindowTitle
 "auto BufEnter * :SetWindowTitle
 auto VimLeave * :set t_ts=kbash\\
 
-au VimEnter * RainbowParenthesesToggle
-au Syntax * RainbowParenthesesLoadRound
-au Syntax * RainbowParenthesesLoadSquare
-au Syntax * RainbowParenthesesLoadBraces
 
 
 let g:airline#extensions#tabline#enabled = 1

@@ -1,0 +1,38 @@
+commit 71f5870f55edb856335ad55dd545805383dc1e35
+Author: Charlie Gruenwald <cgruenwald@nvidia.com>
+Date:   Sat Feb 28 01:38:34 2026 -0700
+
+    Use b:term_title for terminal buffer display names.
+    
+    When a terminal buffer's b:term_title has been set by an OSC 0/2 title
+    sequence (e.g. via shell preexec/precmd hooks), use it as the display
+    name instead of the opaque `!PID:shell` fallback.  This makes it easy
+    to distinguish multiple terminal buffers by showing the running command
+    or current directory rather than an arbitrary process ID.
+    
+    Neovim initialises b:term_title to the raw `term://` URI before any
+    title sequence has arrived, so values matching that prefix are ignored
+    and the existing fallback is used instead.
+
+diff --git a/plugin/bufexplorer.vim b/plugin/bufexplorer.vim
+index 96dab3c..1c0ff34 100644
+--- a/plugin/bufexplorer.vim
++++ b/plugin/bufexplorer.vim
+@@ -1033,6 +1033,17 @@ function! s:CalculateBufferDetails(buf)
+             endif
+         endif
+ 
++        " Prefer the OSC title set by the shell (b:term_title) when available.
++        " Neovim initialises b:term_title to the raw `term://` URI before any
++        " title sequence arrives, so ignore values that still look like URIs.
++        " When the shell emits an OSC 0/2 title (e.g. via preexec/precmd hooks),
++        " this shows the running command or current directory instead of the
++        " opaque `!PID:shell` fallback, making it easy to distinguish terminals.
++        let term_title = getbufvar(buf.bufNbr, 'term_title', '')
++        if !empty(term_title) && term_title !~# '^term://'
++            let name = '!' . term_title
++        endif
++
+         let slashed_cwd = fnamemodify(cwd, ':p')
+         let buf.fullpath = slashed_cwd . name
+         let buf.fulldir = fnamemodify(slashed_cwd, ':h')

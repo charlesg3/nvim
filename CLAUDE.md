@@ -34,3 +34,11 @@ Personal Neovim configuration for macOS and Linux, managed as a git repo at `~/.
 `doc/keymap.md` is the human-readable keymap reference, opened with `km` inside nvim.
 
 **Regenerate it whenever you add or change key bindings or install something that adds new keys.** Keep it accurate — it is the primary reference for what keys do what.
+
+## claude-watcher (active development)
+
+`bundle/claude-watcher/` is a **plain git repo**, not a submodule. `scripts/update.sh`
+skips it to avoid `--depth=1 --force` wiping uncommitted changes.
+
+Work directly inside `bundle/claude-watcher/`. Once development stabilises it will be
+converted to a proper submodule tracked by this repo.

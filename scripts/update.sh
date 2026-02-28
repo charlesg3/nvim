@@ -64,6 +64,12 @@ for bundle_path in "$NVIM_DIR/bundle"/*/; do
     [ -d "$bundle_path" ] || continue
     name="$(basename "$bundle_path")"
 
+    # claude-watcher is a plain git repo under active development, not a submodule
+    if [[ "$name" == "claude-watcher" ]]; then
+        ok "$name (development checkout — skipped)"
+        continue
+    fi
+
     before_sha="$(git -C "$bundle_path" rev-parse --short HEAD 2>/dev/null || echo "")"
 
     _spin "$name"

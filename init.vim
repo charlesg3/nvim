@@ -557,6 +557,9 @@ require('render-markdown').setup({
     icon = '',
     per_level = 4,
   },
+  bullet = {
+    icons = { '•', '◦', '▸', '▹' },
+  },
   code = {
     border = 'thin',
     above = '─',
@@ -600,7 +603,9 @@ local function set_markdown_highlights()
   vim.api.nvim_set_hl(0, 'RenderMarkdownCodeBorder',   { fg = '#0d1a2a', bg = blue })
   vim.api.nvim_set_hl(0, 'RenderMarkdownCodeInfo',     { fg = blue })
   vim.api.nvim_set_hl(0, '@markup.raw.block.markdown', { fg = blue })
-  vim.api.nvim_set_hl(0, 'RenderMarkdownCode',         { bg = 'NONE' })
+  vim.api.nvim_set_hl(0, 'RenderMarkdownCode',         { fg = '#E6E6E6', bg = '#31353A' })
+  -- Table headers: lavender (not pink Title)
+  vim.api.nvim_set_hl(0, 'RenderMarkdownTableHead',   { bold = true })
 end
 
 set_markdown_highlights()

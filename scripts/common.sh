@@ -7,6 +7,7 @@ HEADER='\033[38;2;177;185;245m'  # Panda lavender (#B1B9F5)
 CYAN='\033[0;36m'
 YELLOW='\033[0;33m'
 RED='\033[0;31m'
+BLUE='\033[38;2;111;193;255m'    # Panda blue (#6FC1FF)
 DIM='\033[2m'
 RESET='\033[0m'
 
@@ -15,5 +16,5 @@ updated()     { echo -e "  ${CYAN}↑${RESET} $*"; }
 warn()        { echo -e "  ${YELLOW}~${RESET} $*"; }
 err()         { echo -e "  ${RED}✗${RESET} $*"; }
 header()      { echo -e "\n${BOLD}${HEADER}${*}${RESET}"; }
-_spin()       { printf "  ${DIM}↻${RESET}  %s..." "$1"; }
+_spin()       { printf "  ${BLUE}↻${RESET}  %s..." "$1"; }
 _clear_spin() { printf "\r\033[2K"; }

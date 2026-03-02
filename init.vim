@@ -226,21 +226,29 @@ nmap tt :rightbelow vsplit \| terminal<CR>:startinsert<CR>
 nmap tc :rightbelow vsplit \| terminal<CR>:startinsert<CR>claude<CR>
 
 "re-source this file
-" Only define function if it doesn't exist (so it persists across reloads)
+" Guard prevents redefining while the function is executing (E127)
 if !exists('*ReloadConfig')
-    function! ReloadConfig()
-        " Close nvim-tree if it's open
-        silent! NvimTreeClose
-        " Source the config
-        source $HOME/.config/nvim/init.vim
-        source $HOME/.config/nvim/after/plugin/airline.vim
-        " Refresh airline
-        AirlineRefresh
-        call AirLineCG3()
-        " Re-enable render-markdown for current buffer
-        silent! lua require('render-markdown').enable()
-        echo "init.vim reloaded!"
-    endfunction
+function! ReloadConfig()
+    " Save current window ID (stable across window open/close) and tree state
+    let l:cur_win_id = win_getid()
+    let l:tree_was_open = !empty(filter(range(1, winnr('$')), 'getwinvar(v:val, "&filetype") == "NvimTree"'))
+    " Close nvim-tree if it's open
+    silent! NvimTreeClose
+    " Source the config
+    source $HOME/.config/nvim/init.vim
+    source $HOME/.config/nvim/after/plugin/airline.vim
+    " Refresh airline
+    AirlineRefresh
+    call AirLineCG3()
+    " Re-enable render-markdown for current buffer
+    silent! lua require('render-markdown').enable()
+    " Restore nvim-tree if it was open, then return focus to original window
+    if l:tree_was_open
+        silent! NvimTreeOpen
+        call win_gotoid(l:cur_win_id)
+    endif
+    echo "init.vim reloaded!"
+endfunction
 endif
 nmap ,s :call ReloadConfig()<CR>
  

@@ -8,6 +8,7 @@
 | `gd` | Go to definition |
 | `gr` | Find all references |
 | `gh` | Hover (show type / docs) |
+| `gx` | Open URL under cursor in browser |
 
 ## EasyMotion
 | Key | Action |

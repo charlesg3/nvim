@@ -22,6 +22,7 @@ let s:blue         = '#6FC1FF'   " functions
 let s:light_blue   = '#45A9F9'   " escape chars / tags
 let s:orange       = '#FFB86C'   " constants
 let s:light_orange = '#FFCC95'   " operators / variables
+let s:wheat        = '#F5DEB3'   " pale wheat (doc comments / warm labels)
 let s:purple       = '#B084EB'   " tags / class names
 " s:light_purple = s:lavender (see above)
 let s:comment      = '#676B79'   " comments / dim
@@ -39,6 +40,7 @@ let s:operator = s:comment
 let s:tag      = s:purple
 let s:escape   = s:light_blue
 let s:comment_col = s:comment
+let s:doc_comment = s:wheat
 let s:error    = s:hot_pink
 let s:warning  = s:orange
 let s:info     = s:blue
@@ -55,6 +57,7 @@ endfunction
 " ── Syntax ────────────────────────────────────────────────────────────────────
 call s:hi('Normal',      s:fg,       s:bg,        'NONE')
 call s:hi('Comment',     s:comment_col, '',         'italic')
+call s:hi('DocComment',  s:wheat,       '',         'italic')
 call s:hi('Constant',    s:constant, '',           'NONE')
 call s:hi('Number',      s:constant, '',           'NONE')
 call s:hi('Boolean',     s:constant, '',           'NONE')
@@ -147,16 +150,21 @@ call s:hi('NvimTreeSymlink',          s:cyan,     '',    'underline')
 call s:hi('NvimTreeIndentMarker',     s:comment,  '',    'NONE')
 
 " ── Global vars (for Lua/init.vim cross-theme references) ────────────────────
+let g:color_bg      = s:bg
 let g:color_green   = s:lime
 let g:color_cyan    = s:cyan
 let g:color_purple  = s:lavender
 let g:color_peach   = s:light_pink
 let g:color_blue    = s:blue
+let g:color_orange  = s:orange
+let g:color_wheat   = s:wheat
+let g:color_dim     = s:comment
 
 " ── Tree-sitter capture group links ──────────────────────────────────────────
 " Explicit links ensure treesitter uses our theme regardless of nvim version
 hi! link @comment              Comment
-hi! link @comment.doc          Comment
+hi! link @comment.doc          DocComment
+hi! link @comment.documentation DocComment
 hi! link @string               String
 hi! link @string.special       Special
 hi! link @number               Number

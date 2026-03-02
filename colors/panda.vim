@@ -158,6 +158,7 @@ let g:color_peach   = s:light_pink
 let g:color_blue    = s:blue
 let g:color_orange  = s:orange
 let g:color_wheat   = s:wheat
+let g:color_fg      = s:fg
 let g:color_dim     = s:comment
 
 " ── Tree-sitter capture group links ──────────────────────────────────────────

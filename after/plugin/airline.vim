@@ -89,15 +89,12 @@ function! s:TermFgName(bufnr)
   if l:pid > 0
     let l:cpids = systemlist('pgrep -P ' . l:pid . ' 2>/dev/null')
     if !empty(l:cpids)
-      let l:comm = '/proc/' . l:cpids[-1] . '/comm'
-      if filereadable(l:comm)
-        let l:name = get(readfile(l:comm), 0, '')
-      else
-        " macOS: ps -o comm= may return the full binary path (e.g. Homebrew
-        " installs); strip to basename so we show "python3" not the Cellar path.
-        let l:raw  = get(systemlist('ps -o comm= -p ' . l:cpids[-1] . ' 2>/dev/null'), 0, '')
-        let l:name = fnamemodify(l:raw, ':t')
-      endif
+      " ps -o args= gives the full command line (argv[0] + args).
+      " Strip any leading path from argv[0] so '/usr/bin/sleep 100' → 'sleep 100'
+      " and Homebrew's long Cellar paths are reduced to just the binary name + args.
+      let l:raw  = get(systemlist('ps -o args= -p ' . l:cpids[-1] . ' 2>/dev/null'), 0, '')
+      let l:full = substitute(l:raw, '^\S*/', '', '')
+      let l:name = strcharlen(l:full) > 20 ? strcharpart(l:full, 0, 20) . '…' : l:full
     endif
   endif
   let s:fg_cache[a:bufnr] = [l:name, l:now]

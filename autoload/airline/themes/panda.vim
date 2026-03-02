@@ -66,14 +66,19 @@ let s:T3 = [s:fg,  s:grey,    254, 236        ]
 let g:airline#themes#panda#palette.terminal = airline#themes#generate_color_map(s:T1, s:T2, s:T3)
 
 " ── Inactive ─────────────────────────────────────────────────────────────────
+" Progressive grey gradient from outside in: a/z → b/y → c/x → editor bg
+"   a/z  #464C57  outermost — lightest inactive grey
+"   b/y  #3B4149  middle step
+"   c/x  #31353A  innermost section — matches active-mode grey (s:grey)
+"   mid  #1A1B1C  editor bg
+let s:ia2 = '#464C57'   " inactive a/z bg
+let s:ib2 = '#3B4149'   " inactive b/y bg
 let g:airline#themes#panda#palette.inactive = airline#themes#generate_color_map(
-  \ [s:dim, s:ia,   243, 235, ''],
-  \ [s:dim, s:grey, 243, 236, ''],
+  \ [s:dim, s:ia2,  243, 238, ''],
+  \ [s:dim, s:ib2,  243, 237, ''],
   \ [s:dim, s:bg,   243, 232, ''])
 " generate_color_map mirrors N3 (editor bg) onto both airline_c and airline_x.
-" Override both to use grey so section_c/x have a visible background in
-" inactive windows, and so AirlineFillSep_inactive gets a non-trivial fg
-" (grey on editor-bg) instead of editor-bg on editor-bg (invisible).
+" Override both to use s:grey so section_c/x are visible and match active modes.
 let g:airline#themes#panda#palette.inactive.airline_c = [s:dim, s:grey, 243, 236, '']
 let g:airline#themes#panda#palette.inactive.airline_x = [s:dim, s:grey, 243, 236, '']
 let g:airline#themes#panda#palette.inactive_modified = {

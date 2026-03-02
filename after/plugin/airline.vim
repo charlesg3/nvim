@@ -175,12 +175,17 @@ function! s:RenderTermGitStatus()
   if !get(w:, 'cg3_active', 1)
     " Plain text for inactive windows — no inline highlights (same reason as
     " s:RenderTermProcess: dynamic output bypasses the builder's _inactive pass).
-    let l:result = empty(l:branch) ? '' : '🌿 ' . l:branch
+    " Mirror active spacing: two spaces between branch and counts, one between counts.
+    let l:plain_counts = []
     for [l:count, l:symbol, l:_] in l:indicators
       if l:count > 0
-        let l:result .= (empty(l:result) ? '' : ' ') . l:symbol . l:count
+        call add(l:plain_counts, l:symbol . l:count)
       endif
     endfor
+    let l:result = empty(l:branch) ? '' : '🌿 ' . l:branch
+    if !empty(l:plain_counts)
+      let l:result .= (empty(l:result) ? '' : '  ') . join(l:plain_counts, ' ')
+    endif
     return l:result
   endif
 

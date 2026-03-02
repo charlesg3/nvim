@@ -183,6 +183,11 @@ function! s:SetupTermHighlights()
   " (it swaps airline_c → airline_term); pin its bg to match airline_c so the
   " b→c separator uses grey, not the dark #202020 default from themes#patch
   exec 'highlight airline_term guifg=' . g:color_fg . ' guibg=' . l:c_bg . ' gui=NONE cterm=NONE'
+  " Fix B → C separator in terminal buffers: highlight() re-creates
+  " airline_b_to_airline_term using airline_term.bg from the palette (#202020)
+  " before we pin it above, so the > gets the wrong background.  Override it
+  " here so it always matches the actual airline_term bg we just set.
+  exec 'highlight airline_b_to_airline_term guifg=' . l:b_bg . ' guibg=' . l:c_bg . ' gui=NONE cterm=NONE'
 endfunction
 
 function! AirLineCG3()

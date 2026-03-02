@@ -1,78 +1,78 @@
-" Panda Syntax airline theme — matches shell/colors.sh palette
-" vim: et ts=2 sts=2 sw=2
+" autoload/airline/themes/panda.vim
+" Airline theme for the Panda color scheme.
+"
+" Section layout (left → right, symmetric):
+"   a: accent bg (mode color)        z: accent bg
+"   b: pale accent bg (30% blend)    y: pale accent bg
+"   c: grey  #31353A                 x: grey #31353A
+"              middle: editor bg #1A1B1C (clear)
 
 scriptencoding utf-8
 
 let g:airline#themes#panda#palette = {}
 
-" Palette reference:
-"   bg         = #1A1B1C   mid        = #282D32   selection  = #31353A
-"   comment    = #676B79   fg         = #E6E6E6
-"   lime       = #A8F0A6   blue       = #6FC1FF   hot_pink   = #FF2C6D
-"   pink       = #FF75B5   orange     = #FFB86C   lavender   = #BCAAFE   purple = #B084EB
+" ── Shared ───────────────────────────────────────────────────────────────────
+let s:bg   = '#1A1B1C'   " editor bg / middle gutter
+let s:grey = '#31353A'   " section c / x
+let s:dim  = '#676B79'   " inactive fg
+let s:dfg  = '#1A1B1C'   " section_a fg (dark text on bright accent)
+let s:fg   = '#E6E6E6'   " section b/c fg
+let s:ia   = '#242628'   " inactive section_a bg (no mode tint)
 
-" ── Normal mode ───────────────────────────────────────────────────────────────
-" a = mode pill (lime), b = filename area (fg on selection), c = middle (dim on bg)
-let s:N1 = [ '#1A1B1C', '#A8F0A6', 232, 120, 'bold' ]
-let s:N2 = [ '#E6E6E6', '#31353A', 231, 236        ]
-let s:N3 = [ '#E6E6E6', '#282D32', 231, 235        ]
+" ── Normal — lime ────────────────────────────────────────────────────────────
+let s:N1 = [s:dfg, '#A8F0A6', 232, 120, 'bold']
+let s:N2 = [s:fg,  '#445A45', 254, 235        ]
+let s:N3 = [s:fg,  s:grey,    254, 236        ]
 let g:airline#themes#panda#palette.normal = airline#themes#generate_color_map(s:N1, s:N2, s:N3)
 let g:airline#themes#panda#palette.normal_modified = {
-      \ 'airline_c': [ '#FFB86C', '#1A1B1C', 214, 232, '' ],
-      \ }
+  \ 'airline_c': ['#FFB86C', s:grey, 215, 236, ''] }
 
-" ── Insert mode ───────────────────────────────────────────────────────────────
-let s:I1 = [ '#1A1B1C', '#6FC1FF', 232, 117, 'bold' ]
-let s:I2 = [ '#E6E6E6', '#31353A', 231, 236        ]
-let s:I3 = [ '#E6E6E6', '#282D32', 231, 235        ]
+" ── Insert — blue ─────────────────────────────────────────────────────────────
+let s:I1 = [s:dfg, '#6FC1FF', 232, 117, 'bold']
+let s:I2 = [s:fg,  '#334C60', 254, 235        ]
+let s:I3 = [s:fg,  s:grey,    254, 236        ]
 let g:airline#themes#panda#palette.insert = airline#themes#generate_color_map(s:I1, s:I2, s:I3)
 let g:airline#themes#panda#palette.insert_modified = {
-      \ 'airline_c': [ '#FFB86C', '#1A1B1C', 214, 232, '' ],
-      \ }
+  \ 'airline_c': ['#FFB86C', s:grey, 215, 236, ''] }
+let g:airline#themes#panda#palette.insert_paste = {
+  \ 'airline_a': [s:dfg, '#FFB86C', 232, 215, 'bold'] }
 
-" ── Terminal mode (same colours as insert) ────────────────────────────────────
-let g:airline#themes#panda#palette.terminal = airline#themes#generate_color_map(s:I1, s:I2, s:I3)
-
-" ── Replace mode ──────────────────────────────────────────────────────────────
-let g:airline#themes#panda#palette.replace = copy(g:airline#themes#panda#palette.insert)
-let g:airline#themes#panda#palette.replace.airline_a = [ '#1A1B1C', '#FF2C6D', 232, 197, 'bold' ]
-let g:airline#themes#panda#palette.replace_modified  = g:airline#themes#panda#palette.insert_modified
-
-" ── Visual mode ───────────────────────────────────────────────────────────────
-let s:V1 = [ '#1A1B1C', '#FF75B5', 232, 212, 'bold' ]
-let s:V2 = [ '#E6E6E6', '#31353A', 231, 236        ]
-let s:V3 = [ '#E6E6E6', '#282D32', 231, 235        ]
+" ── Visual — lavender ────────────────────────────────────────────────────────
+let s:V1 = [s:dfg, '#B1B9F5', 232, 189, 'bold']
+let s:V2 = [s:fg,  '#474A5D', 254, 235        ]
+let s:V3 = [s:fg,  s:grey,    254, 236        ]
 let g:airline#themes#panda#palette.visual = airline#themes#generate_color_map(s:V1, s:V2, s:V3)
 let g:airline#themes#panda#palette.visual_modified = {
-      \ 'airline_c': [ '#FFB86C', '#1A1B1C', 214, 232, '' ],
-      \ }
+  \ 'airline_c': ['#FFB86C', s:grey, 215, 236, ''] }
 
-" ── Command mode ──────────────────────────────────────────────────────────────
-let s:C1 = [ '#1A1B1C', '#FFB86C', 232, 214, 'bold' ]
-let s:C2 = [ '#E6E6E6', '#31353A', 231, 236        ]
-let s:C3 = [ '#E6E6E6', '#282D32', 231, 235        ]
+" ── Replace — hot pink ───────────────────────────────────────────────────────
+let s:R1 = [s:dfg, '#FF2C6D', 232, 197, 'bold']
+let s:R2 = [s:fg,  '#5E2034', 254, 235        ]
+let s:R3 = [s:fg,  s:grey,    254, 236        ]
+let g:airline#themes#panda#palette.replace = airline#themes#generate_color_map(s:R1, s:R2, s:R3)
+let g:airline#themes#panda#palette.replace_modified = {
+  \ 'airline_c': ['#FFB86C', s:grey, 215, 236, ''] }
+
+" ── Command — orange ─────────────────────────────────────────────────────────
+let s:C1 = [s:dfg, '#FFB86C', 232, 215, 'bold']
+let s:C2 = [s:fg,  '#5E4A34', 254, 235        ]
+let s:C3 = [s:fg,  s:grey,    254, 236        ]
 let g:airline#themes#panda#palette.commandline = airline#themes#generate_color_map(s:C1, s:C2, s:C3)
 
-" ── Inactive windows ──────────────────────────────────────────────────────────
-let s:IA = [ '#676B79', '#141516', 244, 233, '' ]
-let g:airline#themes#panda#palette.inactive          = airline#themes#generate_color_map(s:IA, s:IA, s:IA)
+" ── Terminal — cyan ───────────────────────────────────────────────────────────
+let s:T1 = [s:dfg, '#8CF0E4', 232, 122, 'bold']
+let s:T2 = [s:fg,  '#3C5A58', 254, 235        ]
+let s:T3 = [s:fg,  s:grey,    254, 236        ]
+let g:airline#themes#panda#palette.terminal = airline#themes#generate_color_map(s:T1, s:T2, s:T3)
+
+" ── Inactive ─────────────────────────────────────────────────────────────────
+let g:airline#themes#panda#palette.inactive = airline#themes#generate_color_map(
+  \ [s:dim, s:ia,   243, 235, ''],
+  \ [s:dim, s:grey, 243, 236, ''],
+  \ [s:dim, s:bg,   243, 232, ''])
 let g:airline#themes#panda#palette.inactive_modified = {
-      \ 'airline_c': [ '#B084EB', '', 97, '', '' ],
-      \ }
+  \ 'airline_c': ['#FFB86C', s:bg, 215, 232, ''] }
 
-" ── airline_term: shell name shown after the mode label in terminal buffers ───
-" Must come after all mode palettes are defined.
-" guifg = lime (s:N1[1]), guibg = selection (s:N2[1])
-let s:TermLabel = [ s:N1[1], s:N2[1], s:N1[3], s:N2[3], '' ]
-let g:airline#themes#panda#palette.normal.airline_term      = s:TermLabel
-let g:airline#themes#panda#palette.insert.airline_term      = s:TermLabel
-let g:airline#themes#panda#palette.terminal.airline_term    = s:TermLabel
-let g:airline#themes#panda#palette.replace.airline_term     = s:TermLabel
-let g:airline#themes#panda#palette.visual.airline_term      = s:TermLabel
-let g:airline#themes#panda#palette.commandline.airline_term = s:TermLabel
-let g:airline#themes#panda#palette.inactive.airline_term    = [ s:IA[0], s:IA[1], s:IA[2], s:IA[3], '' ]
-
-" ── Accents (readonly indicator, etc.) ────────────────────────────────────────
+" ── Accents ───────────────────────────────────────────────────────────────────
 let g:airline#themes#panda#palette.accents = {
-      \ 'red': [ '#FF2C6D', '', 197, '' ],
-      \ }
+  \ 'red': ['#FF2C6D', '', 197, ''] }

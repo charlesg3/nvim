@@ -70,8 +70,14 @@ let g:airline#themes#panda#palette.inactive = airline#themes#generate_color_map(
   \ [s:dim, s:ia,   243, 235, ''],
   \ [s:dim, s:grey, 243, 236, ''],
   \ [s:dim, s:bg,   243, 232, ''])
+" generate_color_map mirrors N3 (editor bg) onto both airline_c and airline_x.
+" Override both to use grey so section_c/x have a visible background in
+" inactive windows, and so AirlineFillSep_inactive gets a non-trivial fg
+" (grey on editor-bg) instead of editor-bg on editor-bg (invisible).
+let g:airline#themes#panda#palette.inactive.airline_c = [s:dim, s:grey, 243, 236, '']
+let g:airline#themes#panda#palette.inactive.airline_x = [s:dim, s:grey, 243, 236, '']
 let g:airline#themes#panda#palette.inactive_modified = {
-  \ 'airline_c': ['#FFB86C', s:bg, 215, 232, ''] }
+  \ 'airline_c': ['#FFB86C', s:grey, 215, 236, ''] }
 
 " ── Accents ───────────────────────────────────────────────────────────────────
 let g:airline#themes#panda#palette.accents = {

@@ -30,6 +30,7 @@ set ww=<,>,[,],h,l,b,s,~        " normal cursor movement
 set guioptions-=T               " no toolbar 
 set background=dark
 set novisualbell
+set belloff=backspace,cursor,complete,copy,ctrlg,error,esc,hangul,lang,mess,showmatch,operator,register,shell,spell,wildmode  " omit 'term' so BEL from terminal buffers forwards to host
 set termguicolors
 
 colorscheme panda

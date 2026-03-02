@@ -53,8 +53,10 @@ endfunction
 
 let s:cwd_cache = {}
 let s:git_cache = {}
+let s:fg_cache  = {}
 let s:cwd_ttl   = 5
 let s:git_ttl   = 10
+let s:fg_ttl    = 1
 
 function! s:TermCwd(bufnr)
   let l:pid = getbufvar(a:bufnr, 'terminal_job_pid', 0)
@@ -71,6 +73,35 @@ function! s:TermCwd(bufnr)
     endif
   endfor
   return getcwd()
+endfunction
+
+" Return the name of the shell's foreground child process, or '' if idle.
+" Uses pgrep -P to find children; reads /proc/pid/comm on Linux (no fork),
+" falls back to ps on macOS.  Results are cached for s:fg_ttl seconds.
+function! s:TermFgName(bufnr)
+  let l:now = localtime()
+  let l:cc  = get(s:fg_cache, a:bufnr, [])
+  if len(l:cc) == 2 && l:now - l:cc[1] < s:fg_ttl
+    return l:cc[0]
+  endif
+  let l:pid  = getbufvar(a:bufnr, 'terminal_job_pid', 0)
+  let l:name = ''
+  if l:pid > 0
+    let l:cpids = systemlist('pgrep -P ' . l:pid . ' 2>/dev/null')
+    if !empty(l:cpids)
+      let l:comm = '/proc/' . l:cpids[-1] . '/comm'
+      if filereadable(l:comm)
+        let l:name = get(readfile(l:comm), 0, '')
+      else
+        " macOS: ps -o comm= may return the full binary path (e.g. Homebrew
+        " installs); strip to basename so we show "python3" not the Cellar path.
+        let l:raw  = get(systemlist('ps -o comm= -p ' . l:cpids[-1] . ' 2>/dev/null'), 0, '')
+        let l:name = fnamemodify(l:raw, ':t')
+      endif
+    endif
+  endif
+  let s:fg_cache[a:bufnr] = [l:name, l:now]
+  return l:name
 endfunction
 
 function! s:TermGitInfo()
@@ -110,9 +141,19 @@ function! s:TermGitInfo()
 endfunction
 
 function! s:RenderTermProcess()
-  let l:name = matchstr(bufname('%'), '//\d\+:\zs.*')
-  if l:name ==# '' | let l:name = bufname('%') | endif
-  let l:dir = fnamemodify(s:TermCwd(bufnr('%')), ':~:t')
+  let l:bufnr = bufnr('%')
+  " Show the shell's foreground child process when one is running (e.g. python3,
+  " sleep).  When the shell is idle, child list is empty and we fall back to the
+  " raw shell name (e.g. zsh).  This avoids the long user@host:dir OSC title
+  " that shells emit from their precmd hook.
+  let l:fg = s:TermFgName(l:bufnr)
+  if !empty(l:fg)
+    let l:name = l:fg
+  else
+    let l:name = matchstr(bufname('%'), '//\d\+:\zs.*')
+    if l:name ==# '' | let l:name = bufname('%') | endif
+  endif
+  let l:dir = fnamemodify(s:TermCwd(l:bufnr), ':~:t')
   return '%#AirlineTermDir#📁 ' . l:dir . ' %#AirlineTermName#> 💻 ' . l:name
 endfunction
 

@@ -54,6 +54,7 @@ let g:airline#extensions#tabline#enabled = 1
 
 execute pathogen#infect()
 let g:ctrlp_map = '<S-C-O>'
+let g:ctrlp_open_new_file = 'r'
 
 let g:ale_lint_on_text_changed = 'never'
 

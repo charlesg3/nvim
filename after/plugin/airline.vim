@@ -151,7 +151,7 @@ function! s:RenderTermProcess()
     if l:name ==# '' | let l:name = bufname('%') | endif
   endif
   let l:dir = fnamemodify(s:TermCwd(l:bufnr), ':~:t')
-  return '%#AirlineTermDir#📁 ' . l:dir . ' %#AirlineTermName#> 💻 ' . l:name
+  return '%#AirlineTermDir#📁' . l:dir . ' %#AirlineTermName#' . g:airline_left_alt_sep . ' 💻' . l:name
 endfunction
 
 function! s:RenderTermGitStatus()

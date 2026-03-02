@@ -513,6 +513,17 @@ require("nvim-tree").setup({
   end,
 })
 
+-- NvimTree: blank statusline, hide end-of-buffer markers, disable airline
+vim.api.nvim_create_autocmd('BufWinEnter', {
+  callback = function()
+    if vim.bo.filetype == 'NvimTree' then
+      vim.b.airline_disable_statusline = 1
+      vim.wo.statusline = ' '
+      vim.wo.fillchars = 'eob: '
+    end
+  end,
+})
+
 -- Setup render-markdown
 require('render-markdown').setup({
   enabled = true,

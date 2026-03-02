@@ -174,6 +174,11 @@ function! s:SetupTermHighlights()
   " fill-area separator: grey fg on editor-bg — used for > after section_c and < before section_x
   let l:fill_bg = synIDattr(synIDtrans(hlID('Normal')), 'bg#')
   exec 'highlight AirlineFillSep guifg=' . l:c_bg . ' guibg=' . l:fill_bg . ' gui=NONE cterm=NONE'
+  " Fix fill → X separator: airline auto-generates airline_c_to_airline_x as grey→grey
+  " (airline_c and airline_x share the same bg in generate_color_map), making the
+  " powerline < invisible.  Override so < renders as grey-on-editor-bg, matching
+  " the AirlineFillSep > on the left side.
+  exec 'highlight airline_c_to_airline_x guifg=' . l:c_bg . ' guibg=' . l:fill_bg . ' gui=NONE cterm=NONE'
   " airline_term is what builder.vim uses for section_c in terminal buffers
   " (it swaps airline_c → airline_term); pin its bg to match airline_c so the
   " b→c separator uses grey, not the dark #202020 default from themes#patch
@@ -190,9 +195,7 @@ function! AirLineCG3()
 
   let g:airline_inactive_collapse = 0   " show folder icon in inactive windows too
   let g:airline_section_b = airline#section#create_left(['term_b'])
-  let g:airline_section_gutter = '%#AirlineFillSep#' . g:airline_left_sep
-        \ . '%#Normal#%='
-        \ . '%#AirlineFillSep#' . g:airline_right_sep
+  let g:airline_section_gutter = '%#AirlineFillSep#' . g:airline_left_sep . '%#Normal#%='
   let g:airline_section_c = airline#section#create_left(['term_c'])
 
   let g:airline_section_a_term = airline#section#create_left(['mode'])

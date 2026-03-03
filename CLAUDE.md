@@ -37,8 +37,7 @@ Personal Neovim configuration for macOS and Linux, managed as a git repo at `~/.
 
 ## claude-status (active development)
 
-`bundle/claude-status/` is a **plain git repo**, not a submodule. `scripts/update.sh`
-skips it to avoid `--depth=1 --force` wiping uncommitted changes.
-
-Work directly inside `bundle/claude-status/`. Once development stabilises it will be
-converted to a proper submodule tracked by this repo.
+`bundle/claude-status/` is a submodule (`git@github.com:charlesg3/claude-status.git`).
+`scripts/update.sh` skips the `--depth=1 --force` reset for it so local changes are
+preserved. Work directly inside `bundle/claude-status/` — edit, commit, and push as
+normal.

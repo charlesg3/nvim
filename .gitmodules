@@ -61,3 +61,6 @@
 [submodule "bundle/rainbow-delimiters.nvim"]
 	path = bundle/rainbow-delimiters.nvim
 	url = https://github.com/HiPhish/rainbow-delimiters.nvim
+[submodule "bundle/claude-status"]
+	path = bundle/claude-status
+	url = git@github.com:charlesg3/claude-status.git

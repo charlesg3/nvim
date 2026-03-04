@@ -38,177 +38,37 @@ endfunction
 
 
 " ---------------------------------------------------------------------------
-" Terminal window — branch & git status
+" Terminal window sections — delegates to lua/airline_term.lua.
 "
-" s:TermCwd()     reads the shell's actual cwd via /proc (Linux) or lsof (macOS).
-" s:TermGitInfo() runs git status once per s:git_ttl seconds.  Two-level
-"                 cache: cwd per bufnr (s:cwd_ttl) + git data per cwd (s:git_ttl).
+" Data collection (cwd via /proc or lsof, foreground process via pgrep+ps,
+" git status) runs on a vim.uv timer using non-blocking vim.system() calls.
+" get_b() / get_c() return pre-built strings from a Lua cache — zero I/O at
+" render time, no event-loop stalls, no cursor flicker.
 " ---------------------------------------------------------------------------
 
-let s:cwd_cache = {}
-let s:git_cache = {}
-let s:fg_cache  = {}
-let s:cwd_ttl   = 5
-let s:git_ttl   = 10
-let s:fg_ttl    = 1
-
-function! s:TermCwd(bufnr)
-  let l:pid = getbufvar(a:bufnr, 'terminal_job_pid', 0)
-  if l:pid <= 0 | return getcwd() | endif
-  let l:link = '/proc/' . l:pid . '/cwd'
-  let l:target = resolve(l:link)
-  if l:target !=# l:link && isdirectory(l:target)
-    return l:target
-  endif
-  let l:out = systemlist('lsof -a -p ' . l:pid . ' -d cwd -Fn 2>/dev/null')
-  for l:line in l:out
-    if l:line =~# '^n/'
-      return l:line[1:]
-    endif
-  endfor
-  return getcwd()
-endfunction
-
-" Return the name of the shell's foreground child process, or '' if idle.
-" Uses pgrep -P to find children; reads /proc/pid/comm on Linux (no fork),
-" falls back to ps on macOS.  Results are cached for s:fg_ttl seconds.
-function! s:TermFgName(bufnr)
-  let l:now = localtime()
-  let l:cc  = get(s:fg_cache, a:bufnr, [])
-  if len(l:cc) == 2 && l:now - l:cc[1] < s:fg_ttl
-    return l:cc[0]
-  endif
-  let l:pid  = getbufvar(a:bufnr, 'terminal_job_pid', 0)
-  let l:name = ''
-  if l:pid > 0
-    let l:cpids = systemlist('pgrep -P ' . l:pid . ' 2>/dev/null')
-    if !empty(l:cpids)
-      " ps -o args= gives the full command line (argv[0] + args).
-      " Strip any leading path from argv[0] so '/usr/bin/sleep 100' → 'sleep 100'
-      " and Homebrew's long Cellar paths are reduced to just the binary name + args.
-      let l:raw  = get(systemlist('ps -o args= -p ' . l:cpids[-1] . ' 2>/dev/null'), 0, '')
-      let l:full = substitute(l:raw, '^\S*/', '', '')
-      let l:name = strcharlen(l:full) > 20 ? strcharpart(l:full, 0, 20) . '…' : l:full
-    endif
-  endif
-  let s:fg_cache[a:bufnr] = [l:name, l:now]
-  return l:name
-endfunction
-
-function! s:TermGitInfo()
-  let l:bufnr = bufnr('%')
-  let l:now   = localtime()
-  let l:cc = get(s:cwd_cache, l:bufnr, [])
-  if len(l:cc) == 2 && l:now - l:cc[1] < s:cwd_ttl
-    let l:cwd = l:cc[0]
-  else
-    let l:cwd = s:TermCwd(l:bufnr)
-    let s:cwd_cache[l:bufnr] = [l:cwd, l:now]
-  endif
-  let l:gc = get(s:git_cache, l:cwd, [])
-  if len(l:gc) == 5 && l:now - l:gc[4] < s:git_ttl
-    return l:gc[0:3]
-  endif
-  let l:lines = systemlist(
-    \ 'git -C ' . shellescape(l:cwd) .
-    \ ' status --porcelain --branch --no-ahead-behind 2>/dev/null')
-  if v:shell_error != 0 || empty(l:lines)
-    let s:git_cache[l:cwd] = ['', 0, 0, 0, l:now]
-    return ['', 0, 0, 0]
-  endif
-  let l:branch = ''
-  if l:lines[0] =~# '^## '
-    let l:branch = matchstr(l:lines[0], '^## \zs[^.]*')
-    if l:branch ==# 'HEAD (no branch)' | let l:branch = 'HEAD' | endif
-  endif
-  let l:staged = 0 | let l:modified = 0 | let l:untracked = 0
-  for l:line in l:lines[1:]
-    if l:line =~# '^[MADRC]' | let l:staged    += 1 | endif
-    if l:line =~# '^.[MD]'   | let l:modified  += 1 | endif
-    if l:line =~# '^??'      | let l:untracked += 1 | endif
-  endfor
-  let s:git_cache[l:cwd] = [l:branch, l:staged, l:modified, l:untracked, l:now]
-  return [l:branch, l:staged, l:modified, l:untracked]
-endfunction
-
-function! s:RenderTermProcess()
-  let l:bufnr = bufnr('%')
-  " Show the shell's foreground child process when one is running (e.g. python3,
-  " sleep).  When the shell is idle, child list is empty and we fall back to the
-  " raw shell name (e.g. zsh).  This avoids the long user@host:dir OSC title
-  " that shells emit from their precmd hook.
-  let l:fg = s:TermFgName(l:bufnr)
-  if !empty(l:fg)
-    let l:name = l:fg
-  else
-    let l:name = matchstr(bufname('%'), '//\d\+:\zs.*')
-    if l:name ==# '' | let l:name = bufname('%') | endif
-  endif
-  let l:dir = fnamemodify(s:TermCwd(l:bufnr), ':~:t')
-  " Inline %#Group# escapes are generated at render time, after the builder's
-  " _inactive substitution has already run, so they're never transformed.
-  " Skip them for inactive windows to avoid bleeding active colours through.
-  if !get(w:, 'cg3_active', 1)
-    return '📁' . l:dir . ' ' . g:airline_left_alt_sep . ' 💻' . l:name
-  endif
-  return '%#AirlineTermDir#📁' . l:dir . ' %#AirlineTermName#' . g:airline_left_alt_sep . ' 💻' . l:name
-endfunction
-
-function! s:RenderTermGitStatus()
-  let [l:branch, l:staged, l:modified, l:untracked] = s:TermGitInfo()
-
-  " Map each git field to [count, symbol, highlight_group].
-  " Add new rows here to display additional git states (e.g. deleted).
-  let l:indicators = [
-    \ [l:staged,    '+', 'AirlineTermStatus'],
-    \ [l:modified,  '*', 'AirlineTermStatus'],
-    \ [l:untracked, '?', 'AirlineTermUntracked'],
-    \ ]
-
-  let l:counts = []
-  for [l:count, l:symbol, l:group] in l:indicators
-    if l:count > 0
-      call add(l:counts, '%#' . l:group . '#' . l:symbol . l:count)
-    endif
-  endfor
-
-  if !get(w:, 'cg3_active', 1)
-    " Plain text for inactive windows — no inline highlights (same reason as
-    " s:RenderTermProcess: dynamic output bypasses the builder's _inactive pass).
-    " Mirror active spacing: two spaces between branch and counts, one between counts.
-    let l:plain_counts = []
-    for [l:count, l:symbol, l:_] in l:indicators
-      if l:count > 0
-        call add(l:plain_counts, l:symbol . l:count)
-      endif
-    endfor
-    let l:result = empty(l:branch) ? '' : '🌿 ' . l:branch
-    if !empty(l:plain_counts)
-      let l:result .= (empty(l:result) ? '' : '  ') . join(l:plain_counts, ' ')
-    endif
-    return l:result
-  endif
-
-  let l:result = ''
-  if !empty(l:branch)
-    let l:result = '%#AirlineTermBranch#🌿 ' . l:branch
-  endif
-  if !empty(l:counts)
-    let l:result .= (empty(l:result) ? '' : '  ') . join(l:counts, ' ')
-  endif
-  return l:result
-endfunction
-
+" AirlineSection_b_cg3() — section_b content.
+" Terminal: 📁 dirname  <sep>  💻 process-name   (from Lua async cache)
+" Normal:   parent-dir/filename (+ if modified)
 function! AirlineSection_b_cg3()
   if &buftype ==# 'terminal'
-    return s:RenderTermProcess()
+    " Pass [bufnr, active] to Lua. `active` controls whether %#Group# highlight
+    " escapes are emitted: they must be omitted for inactive windows because
+    " airline's builder transforms static escapes in the statusline string but
+    " NOT ones produced dynamically by %{%expr%} at render time — leaving them
+    " in inactive windows bleeds active highlight colours through.
+    return luaeval("require('airline_term').get_b(_A[1], _A[2])",
+          \ [bufnr('%'), get(w:, 'cg3_active', 1)])
   endif
   return AirlineFilenameCG3()
 endfunction
 
+" AirlineSection_c_cg3() — section_c content.
+" Terminal: 🌿 branch  +staged *modified ?untracked   (from Lua async cache)
+" Normal:   empty
 function! AirlineSection_c_cg3()
   if &buftype ==# 'terminal'
-    return s:RenderTermGitStatus()
+    return luaeval("require('airline_term').get_c(_A[1], _A[2])",
+          \ [bufnr('%'), get(w:, 'cg3_active', 1)])
   endif
   return ''
 endfunction
@@ -305,7 +165,16 @@ augroup airline_init
   autocmd VimEnter  * call AirLineCG3() | AirlineRefresh | call s:SetupTermHighlights()
   autocmd ColorScheme         * call s:SetupTermHighlights()
   autocmd User AirlineModeChanged call s:SetupTermHighlights()
-  autocmd TermOpen  * call airline#update_statusline()
+  " Rebuild airline's statusline context when a terminal opens, and start the
+  " async data-collection timer (delay=0 so the cache is warm immediately).
+  autocmd TermOpen  * call airline#update_statusline() | lua require('airline_term').start()
+  " Clear the cache entry for a terminal buffer when it is closed, and stop the
+  " timer if no terminal buffers remain.  BufDelete fires while the buffer still
+  " exists so getbufvar can check its type.
+  autocmd BufDelete *
+        \ if getbufvar(expand('<abuf>') + 0, '&buftype') ==# 'terminal' |
+        \   call luaeval("require('airline_term').on_buf_delete(_A)", expand('<abuf>') + 0) |
+        \ endif
   " Track active window so terminal render functions can skip inline highlights
   " in inactive windows (dynamic %#Group# output bypasses the builder's
   " _inactive substitution and would bleed active colours through).

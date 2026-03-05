@@ -118,6 +118,14 @@ if [[ -d "$PATCHES_DIR" ]]; then
     done
 fi
 
+# Commit any pre-existing dirty bundle state (e.g. fresh clone with diverged pointers)
+# before the remote update ran, so the push below includes everything.
+if ! git -C "$NVIM_DIR" diff --quiet -- bundle/ 2>/dev/null; then
+    git -C "$NVIM_DIR" add bundle/
+    git -C "$NVIM_DIR" commit -m "chore: update plugins ($(date +%Y-%m-%d))" &>/dev/null || true
+    updated_plugins+=("(pre-existing changes)")
+fi
+
 if [[ ${#updated_plugins[@]} -gt 0 ]]; then
     plugin_list="$(IFS=", "; echo "${updated_plugins[*]}")"
     _spin "committing plugin updates"
@@ -127,10 +135,15 @@ if [[ ${#updated_plugins[@]} -gt 0 ]]; then
 Updated: $plugin_list" &>/dev/null || true
     _clear_spin; ok "committed ${#updated_plugins[@]} plugin update(s) to nvim repo"
 
+    _spin "pushing nvim"
+    git -C "$NVIM_DIR" push &>/dev/null && _clear_spin && ok "pushed nvim" \
+        || { _clear_spin; warn "could not push nvim repo"; }
+
     # Bump the dotfiles nvim pointer if we're running as a submodule
     if [[ -n "$DOTFILES" ]]; then
         git -C "$DOTFILES" add nvim
         git -C "$DOTFILES" commit -m "chore: bump nvim plugins ($(date +%Y-%m-%d))" &>/dev/null || true
+        git -C "$DOTFILES" push &>/dev/null || true
         ok "dotfiles nvim pointer updated"
     fi
 fi

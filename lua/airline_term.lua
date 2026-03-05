@@ -128,7 +128,7 @@ end
 -- is '' when the directory is not inside a git repository.
 local function _term_git(cwd, cb)
   vim.system(
-    { 'git', '-C', cwd, 'status', '--porcelain', '--branch', '--no-ahead-behind' },
+    { 'git', '--no-optional-locks', '-C', cwd, 'status', '--porcelain', '--branch', '--no-ahead-behind' },
     { text = true },
     function(result)
       if result.code ~= 0 or (result.stdout or '') == '' then

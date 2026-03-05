@@ -192,9 +192,13 @@ function! s:SetupTablineHighlights()
   " airline_right_sep (◄) rule: fg = RIGHT section's bg, bg = LEFT section's bg.
   " The triangle's solid body (fg) shows the incoming colour; the background
   " surface (bg) is the outgoing section the triangle sits on top of.
-  exec 'highlight AirlineClockFillX guifg=' . l:x_bg . ' guibg=' . l:fill_bg . ' gui=NONE cterm=NONE'
-  exec 'highlight AirlineClockX    guifg=' . l:light . ' guibg=' . l:x_bg    . ' gui=NONE cterm=NONE'
-  exec 'highlight AirlineClockXY   guifg=' . l:y_bg  . ' guibg=' . l:x_bg    . ' gui=NONE cterm=NONE'
+  exec 'highlight AirlineClockFillX     guifg=' . l:x_bg . ' guibg=' . l:fill_bg . ' gui=NONE cterm=NONE'
+  exec 'highlight AirlineClockX        guifg=' . l:light . ' guibg=' . l:x_bg    . ' gui=NONE cterm=NONE'
+  exec 'highlight AirlineClockXY       guifg=' . l:y_bg  . ' guibg=' . l:x_bg    . ' gui=NONE cterm=NONE'
+  " Per-buffer-type fg variants — same grey bg, different fg.
+  exec 'highlight AirlineClockXTerm  guifg=' . g:color_green . ' guibg=' . l:x_bg . ' gui=NONE cterm=NONE'
+  exec 'highlight AirlineClockXFile  guifg=' . g:color_wheat . ' guibg=' . l:x_bg . ' gui=NONE cterm=NONE'
+  exec 'highlight AirlineClockXOther guifg=' . g:color_dim   . ' guibg=' . l:x_bg . ' gui=NONE cterm=NONE'
   exec 'highlight AirlineClockY    guifg=' . l:light . ' guibg=' . l:y_bg    . ' gui=NONE cterm=NONE'
   exec 'highlight AirlineClockYZ   guifg=' . l:z_bg  . ' guibg=' . l:y_bg    . ' gui=NONE cterm=NONE'
   exec 'highlight AirlineClockZ    guifg=' . l:dark  . ' guibg=' . l:z_bg    . ' gui=NONE cterm=NONE'
@@ -253,11 +257,23 @@ endfunction
 function! TablineWithClock()
   " Current buffer tail name; fall back to '[No Name]' for unnamed buffers.
   let l:name = expand('%:t')
-  if l:name ==# '' | let l:name = '[No Name]' | endif
+  if l:name ==# ''                      | let l:name = '[No Name]'
+  elseif l:name =~# '^NvimTree_\?\d*$' | let l:name = '[NvimTree]'
+  endif
   let l:sep  = get(g:, 'airline_right_sep', '')
+  if &buftype ==# 'terminal'
+    let l:icon = '💻 '
+    let l:x    = 'AirlineClockXTerm'
+  elseif &buftype ==# '' && l:name !=# '[No Name]'
+    let l:icon = '📄 '
+    let l:x    = 'AirlineClockXFile'
+  else
+    let l:icon = ''
+    let l:x    = 'AirlineClockXOther'
+  endif
   return airline#extensions#tabline#get()
         \ . '%#AirlineClockFillX#' . l:sep
-        \ . '%#AirlineClockX# 📄 ' . l:name . ' '
+        \ . '%#' . l:x . '# ' . l:icon . l:name . ' '
         \ . luaeval("require('airline_clock').get()")
 endfunction
 

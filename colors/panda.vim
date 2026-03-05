@@ -150,16 +150,25 @@ call s:hi('NvimTreeSymlink',          s:cyan,     '',    'underline')
 call s:hi('NvimTreeIndentMarker',     s:comment,  '',    'NONE')
 
 " ── Global vars (for Lua/init.vim cross-theme references) ────────────────────
-let g:color_bg      = s:bg
-let g:color_green   = s:lime
-let g:color_cyan    = s:cyan
-let g:color_purple  = s:lavender
-let g:color_peach   = s:light_pink
-let g:color_blue    = s:blue
-let g:color_orange  = s:orange
-let g:color_wheat   = s:wheat
-let g:color_fg      = s:fg
-let g:color_dim     = s:comment
+let g:color_bg              = s:bg
+let g:color_hot_pink        = s:hot_pink  " #FF2C6D — errors, replace mode
+let g:color_green           = s:lime
+let g:color_grey            = s:selection " #31353A — airline section_c/x; tabline inactive tabs
+" Per-mode 30%-blend section_b backgrounds (accent colour blended 30% into editor bg):
+let g:color_muted_green     = '#445A45'   " normal   — lime   × bg
+let g:color_muted_blue      = '#334C60'   " insert   — blue   × bg
+let g:color_muted_lavender  = '#474A5D'   " visual   — lavender × bg
+let g:color_muted_red       = '#5E2034'   " replace  — hot-pink × bg
+let g:color_muted_orange    = '#5E4A34'   " command  — orange × bg
+let g:color_muted_cyan      = '#3C5A58'   " terminal — cyan   × bg
+let g:color_cyan            = s:cyan
+let g:color_purple      = s:lavender
+let g:color_peach       = s:light_pink
+let g:color_blue        = s:blue
+let g:color_orange      = s:orange
+let g:color_wheat       = s:wheat
+let g:color_fg          = s:fg
+let g:color_dim         = s:comment
 
 " ── Tree-sitter capture group links ──────────────────────────────────────────
 " Explicit links ensure treesitter uses our theme regardless of nvim version

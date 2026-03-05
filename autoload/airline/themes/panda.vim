@@ -66,6 +66,16 @@ let s:T2 = [s:fg,  g:color_muted_cyan,  254, 235        ]
 let s:T3 = [s:fg,  s:grey,              254, 236        ]
 let g:airline#themes#panda#palette.terminal = airline#themes#generate_color_map(s:T1, s:T2, s:T3)
 
+" ── airline_term — override the themes#patch default (#202020 bg) ───────────
+" builder.vim swaps airline_c → airline_term for active terminal buffers
+" regardless of the term extension setting. Without this, airline_b_to_airline_term
+" gets #202020 bg (the patch default), making the B→C separator look like the
+" fill area. Set it to grey (matching airline_c) for every mode.
+for s:_mode in ['normal', 'insert', 'visual', 'replace', 'commandline', 'terminal']
+  let g:airline#themes#panda#palette[s:_mode]['airline_term'] = [s:fg, s:grey, 254, 236, '']
+endfor
+unlet s:_mode
+
 " ── Inactive ─────────────────────────────────────────────────────────────────
 " Progressive grey gradient from outside in: a/z → b/y → c/x → editor bg
 "   a/z  #464C57  outermost — lightest inactive grey

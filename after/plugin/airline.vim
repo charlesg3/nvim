@@ -234,6 +234,13 @@ function! s:SetupTablineHighlights()
   exec 'highlight airline_tabhid_to_airline_tab         guifg=' . l:x_bg . ' guibg=' . l:x_bg . ' gui=NONE cterm=NONE'
   exec 'highlight airline_tabhid_to_airline_tabhid      guifg=' . l:x_bg . ' guibg=' . l:x_bg . ' gui=NONE cterm=NONE'
 
+  " Tab → tabfill transitions: the ► glyph at the end of the buffer list.
+  " fg = the last tab's bg, bg = fill area bg (editor bg).
+  exec 'highlight airline_tab_to_airline_tabfill        guifg=' . l:x_bg . ' guibg=' . l:fill_bg . ' gui=NONE cterm=NONE'
+  exec 'highlight airline_tabhid_to_airline_tabfill     guifg=' . l:x_bg . ' guibg=' . l:fill_bg . ' gui=NONE cterm=NONE'
+  exec 'highlight airline_tabsel_to_airline_tabfill     guifg=' . l:y_bg . ' guibg=' . l:fill_bg . ' gui=NONE cterm=NONE'
+  exec 'highlight airline_tabmod_to_airline_tabfill     guifg=' . l:y_bg . ' guibg=' . l:fill_bg . ' gui=NONE cterm=NONE'
+
   " Force a tabline redraw so all groups take effect immediately.
   redrawtabline
 endfunction
@@ -301,7 +308,8 @@ augroup airline_init
   " airline_b bg, breaking AirlineTermName/Dir backgrounds).
   " WinEnter fires when airline rebuilds the tabline, which re-applies its own
   " default airline_tab/airline_tabfill colours and wipes our overrides.
-  autocmd User AirlineModeChanged call s:SetupTermHighlights() | call s:SetupTablineHighlights()
+  autocmd User AirlineModeChanged  call s:SetupTermHighlights() | call s:SetupTablineHighlights()
+  autocmd User AirlineAfterTheme  call s:SetupTablineHighlights()
   autocmd WinEnter * call s:SetupTablineHighlights()
   " Rebuild airline's statusline context when a terminal opens, and start the
   " async data-collection timer (delay=0 so the cache is warm immediately).

@@ -57,7 +57,7 @@ fi
 # ── Pull nvim repo ────────────────────────────────────────────────────────────
 
 _spin "pulling nvim"
-git -C "$NVIM_DIR" pull --ff-only &>/dev/null && _clear_spin && ok "nvim up to date" \
+git -C "$NVIM_DIR" pull --rebase &>/dev/null && _clear_spin && ok "nvim up to date" \
     || { _clear_spin; warn "could not pull nvim repo (offline or diverged?)"; }
 
 # ── Plugins ───────────────────────────────────────────────────────────────────

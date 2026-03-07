@@ -348,6 +348,8 @@ command! -nargs=0 SetWindowTitle
     \ | execute ':silent !'.'echo -ne "\\033]0;v: ' . expand("%:t") . '\\007"'
     \ | execute ':redraw!'
 
+command! -nargs=+ Title let &titlestring = <q-args> | set title
+
 "auto BufEnter * :set title | let &titlestring = 'v:' . expand('%:t')
 "auto BufEnter * :SetWindowTitle
 auto VimLeave * :set t_ts=kbash\\

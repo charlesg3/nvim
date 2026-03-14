@@ -67,3 +67,6 @@
 [submodule "bundle/image.nvim"]
 	path = bundle/image.nvim
 	url = https://github.com/3rd/image.nvim.git
+[submodule "bundle/diagram.nvim"]
+	path = bundle/diagram.nvim
+	url = https://github.com/3rd/diagram.nvim

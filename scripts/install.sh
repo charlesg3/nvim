@@ -118,12 +118,20 @@ else
     fi
 fi
 check_or_install npm
+check_or_install magick imagemagick
 if ! command -v tree-sitter &>/dev/null; then
     warn "tree-sitter CLI not found, installing via npm..."
     sudo npm install -g tree-sitter-cli
     ok "tree-sitter CLI installed"
 else
     ok "tree-sitter"
+fi
+if ! command -v mmdc &>/dev/null; then
+    warn "mmdc (mermaid-cli) not found, installing via npm..."
+    sudo npm install -g @mermaid-js/mermaid-cli
+    ok "mmdc installed"
+else
+    ok "mmdc"
 fi
 
 # ── Python ────────────────────────────────────────────────────────────────────

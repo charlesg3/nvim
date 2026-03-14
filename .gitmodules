@@ -64,3 +64,6 @@
 [submodule "bundle/claude-status"]
 	path = bundle/claude-status
 	url = git@github.com:charlesg3/claude-status.git
+[submodule "bundle/image.nvim"]
+	path = bundle/image.nvim
+	url = https://github.com/3rd/image.nvim.git

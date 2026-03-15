@@ -584,6 +584,8 @@ if vim.env.KITTY_PID then
       render_buffer = { "InsertLeave", "BufWinEnter", "BufEnter" },
       clear_buffer = { "InsertEnter" },
     },
+    render_offset_top = -1,
+    overlap = true,
     integrations = {
       require('diagram.integrations.markdown'),
     },

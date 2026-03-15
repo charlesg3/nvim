@@ -590,7 +590,14 @@ if vim.env.KITTY_PID then
       require('diagram.integrations.markdown'),
     },
     renderer_options = {
-      mermaid = { background = '#1A1B1C', theme = 'dark' },
+      mermaid = {
+        background = '#1A1B1C',
+        theme = 'dark',
+        cli_args = {
+          '-p', vim.fn.stdpath('config') .. '/puppeteer-config.json',
+          '--configFile', vim.fn.stdpath('config') .. '/mermaid-config.json',
+        },
+      },
     },
   })
 

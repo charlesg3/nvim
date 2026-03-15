@@ -556,8 +556,97 @@ require('render-markdown').setup({
     below = '─',
     language_border = '─',
     width = 'block',
+    disable = { 'mermaid' },
   },
 })
+
+-- Setup image.nvim (only in Kitty — requires kitty graphics protocol)
+if vim.env.KITTY_PID then
+  require('image').setup({
+    backend = 'kitty',
+    processor = 'magick_cli',
+    integrations = {
+      markdown = {
+        enabled = true,
+        clear_in_insert_mode = false,
+        download_remote_images = true,
+        only_render_image_at_cursor = false,
+        filetypes = { 'markdown' },
+      },
+    },
+    max_height_window_percentage = 50,
+    window_overlap_clear_enabled = true,
+    window_overlap_clear_ft_ignore = { 'NvimTree' },
+  })
+
+  require('diagram').setup({
+    events = {
+      render_buffer = { "InsertLeave", "BufWinEnter", "BufEnter" },
+      clear_buffer = { "InsertEnter" },
+    },
+    integrations = {
+      require('diagram.integrations.markdown'),
+    },
+    renderer_options = {
+      mermaid = { background = '#1A1B1C', theme = 'dark' },
+    },
+  })
+
+  -- Hide diagram code block text in normal mode.
+  -- Kitty draws images behind text, so we overlay with spaces AND set fg=bg.
+  local diagram_conceal_ns = vim.api.nvim_create_namespace('diagram_conceal')
+  local diagram_langs = { mermaid=true, plantuml=true, d2=true, gnuplot=true }
+
+  local function update_conceal_hl()
+    local bg = vim.api.nvim_get_hl(0, { name = 'Normal' }).bg
+    local hex = bg and string.format('#%06x', bg) or '#1A1B1C'
+    vim.api.nvim_set_hl(0, 'DiagramConceal', { fg = hex, bg = hex })
+  end
+  update_conceal_hl()
+  vim.api.nvim_create_autocmd('ColorScheme', { callback = update_conceal_hl })
+
+  local function conceal_diagrams(bufnr)
+    vim.api.nvim_buf_clear_namespace(bufnr, diagram_conceal_ns, 0, -1)
+    local lines = vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)
+    local in_block = false
+    local block_start = nil
+    for i, line in ipairs(lines) do
+      if not in_block then
+        local lang = line:match('^```(%w+)')
+        if lang and diagram_langs[lang] then
+          in_block = true
+          block_start = i - 1
+        end
+      elseif line:match('^```%s*$') then
+        for row = block_start, i - 1 do
+          local w = vim.fn.strdisplaywidth(lines[row + 1])
+          vim.api.nvim_buf_set_extmark(bufnr, diagram_conceal_ns, row, 0, {
+            virt_text = {{ string.rep(' ', w), 'DiagramConceal' }},
+            virt_text_pos = 'overlay',
+            hl_group = 'DiagramConceal',
+            end_col = #lines[row + 1],
+            hl_eol = true,
+            priority = 10000,
+          })
+        end
+        in_block = false
+      end
+    end
+  end
+
+  vim.api.nvim_create_autocmd({ 'InsertLeave', 'BufWinEnter', 'BufEnter' }, {
+    callback = function(ev)
+      if vim.bo[ev.buf].filetype == 'markdown' then conceal_diagrams(ev.buf) end
+    end,
+  })
+  vim.api.nvim_create_autocmd('InsertEnter', {
+    callback = function(ev)
+      if vim.bo[ev.buf].filetype == 'markdown' then
+        vim.api.nvim_buf_clear_namespace(ev.buf, diagram_conceal_ns, 0, -1)
+      end
+    end,
+  })
+end
 
 local function set_markdown_highlights()
   local green  = vim.g.color_green

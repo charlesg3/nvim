@@ -1,0 +1,58 @@
+diff --git a/lua/diagram/hover.lua b/lua/diagram/hover.lua
+index bc08410..a4e923d 100644
+--- a/lua/diagram/hover.lua
++++ b/lua/diagram/hover.lua
+@@ -153,7 +153,7 @@ M.show_diagram_hover = function(diagram, integrations, renderer_options)
+     })
+ 
+     if image then
+-      image:render()
++      vim.schedule(function() image:render() end)
+     else
+       -- Fallback if image.nvim fails
+       vim.api.nvim_buf_set_lines(buf, -1, -1, false, {
+diff --git a/lua/diagram/init.lua b/lua/diagram/init.lua
+index de5e8f3..0638aa0 100644
+--- a/lua/diagram/init.lua
++++ b/lua/diagram/init.lua
+@@ -84,6 +84,15 @@ local render_buffer = function(bufnr, winnr, integration)
+       local diagram_row = diagram.range.start_row
+       if vim.bo[bufnr].filetype == "norg" then diagram_row = diagram_row - 1 end
+ 
++      -- Count all code block lines (fence + content + closing fence)
++      -- so virtual padding only adds the extra rows needed beyond the block
++      local block_lines = 1 -- opening fence line
++      local remaining = vim.api.nvim_buf_get_lines(bufnr, diagram_row + 1, -1, false)
++      for _, l in ipairs(remaining) do
++        block_lines = block_lines + 1
++        if l:match('^```') then break end
++      end
++
+       local image = image_nvim.from_file(renderer_result.file_path, {
+         buffer = bufnr,
+         window = winnr,
+@@ -91,7 +100,8 @@ local render_buffer = function(bufnr, winnr, integration)
+         inline = true,
+         x = diagram_col,
+         y = diagram_row,
+-        render_offset_top = 1,
++        render_offset_top = -1,
++        existing_lines = block_lines,
+       })
+       diagram.image = image
+ 
+diff --git a/lua/diagram/renderers/mermaid.lua b/lua/diagram/renderers/mermaid.lua
+index 5305a59..72fd279 100644
+--- a/lua/diagram/renderers/mermaid.lua
++++ b/lua/diagram/renderers/mermaid.lua
+@@ -68,9 +68,7 @@ M.render = function(source, options)
+     table.insert(command_parts, options.height)
+   end
+ 
+-  local command = table.concat(command_parts, " ")
+-
+-  local job_id = vim.fn.jobstart(command, {
++  local job_id = vim.fn.jobstart(command_parts, {
+     on_stdout = function(job_id, data, event) end,
+     on_stderr = function(job_id, data, event)
+       local error_msg = table.concat(data, "\n"):gsub("^%s+", ""):gsub("%s+$", "")

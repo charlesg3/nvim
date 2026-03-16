@@ -137,14 +137,16 @@ Updated: $plugin_list" &>/dev/null || true
     _clear_spin; ok "committed ${#updated_plugins[@]} plugin update(s) to nvim repo"
 
     _spin "pushing nvim"
-    git -C "$NVIM_DIR" push &>/dev/null && _clear_spin && ok "pushed nvim" \
-        || { _clear_spin; warn "could not push nvim repo"; }
-
-    # Bump the dotfiles nvim pointer if we're running as a submodule
-    if [[ -n "$DOTFILES" ]]; then
-        git -C "$DOTFILES" add nvim
-        git -C "$DOTFILES" commit -m "chore: bump nvim plugins ($(date +%Y-%m-%d))" &>/dev/null || true
-        git -C "$DOTFILES" push &>/dev/null || true
-        ok "dotfiles nvim pointer updated"
+    if git -C "$NVIM_DIR" push &>/dev/null; then
+        _clear_spin; ok "pushed nvim"
+        # Bump the dotfiles nvim pointer only after a confirmed push
+        if [[ -n "$DOTFILES" ]]; then
+            git -C "$DOTFILES" add nvim
+            git -C "$DOTFILES" commit -m "chore: bump nvim plugins ($(date +%Y-%m-%d))" &>/dev/null || true
+            git -C "$DOTFILES" push &>/dev/null || true
+            ok "dotfiles nvim pointer updated"
+        fi
+    else
+        _clear_spin; warn "could not push nvim repo — dotfiles pointer not bumped"
     fi
 fi

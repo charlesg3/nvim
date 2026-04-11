@@ -561,7 +561,7 @@ require('render-markdown').setup({
 })
 
 -- Setup image.nvim (only in Kitty — requires kitty graphics protocol)
-if vim.env.KITTY_PID then
+if vim.env.KITTY_PID or vim.env.KITTY_WINDOW_ID then
   require('image').setup({
     backend = 'kitty',
     processor = 'magick_cli',
@@ -593,6 +593,7 @@ if vim.env.KITTY_PID then
       mermaid = {
         background = '#1A1B1C',
         theme = 'dark',
+        width = 2400,
         cli_args = {
           '-p', vim.fn.stdpath('config') .. '/puppeteer-config.json',
           '--configFile', vim.fn.stdpath('config') .. '/mermaid-config.json',

@@ -221,37 +221,3 @@ install_ts_parser "bash"            "tree-sitter-bash/tree-sitter-bash"
 install_ts_parser "python"          "tree-sitter-python/tree-sitter-python"
 install_ts_parser "typescript"      "tree-sitter-typescript/typescript"
 install_ts_parser "clojure"         "tree-sitter-clojure/tree-sitter-clojure"
-
-# ── Nerd Font ─────────────────────────────────────────────────────────────────
-
-header "Nerd Font"
-
-FONT_NAME="JetBrainsMono"
-
-if [[ "$OS" == "Darwin" ]]; then
-    if ls "$HOME/Library/Fonts"/JetBrainsMonoNerdFont* &>/dev/null; then
-        ok "$FONT_NAME Nerd Font"
-    else
-        warn "Installing $FONT_NAME Nerd Font via brew..."
-        brew tap homebrew/cask-fonts 2>/dev/null || true
-        brew install --cask font-jetbrains-mono-nerd-font
-        ok "$FONT_NAME Nerd Font installed"
-    fi
-else
-    FONT_DIR="/usr/local/share/fonts/NerdFonts"
-    if ls "$FONT_DIR"/JetBrainsMonoNerdFont* &>/dev/null; then
-        ok "$FONT_NAME Nerd Font"
-    else
-        warn "Downloading $FONT_NAME Nerd Font..."
-        sudo mkdir -p "$FONT_DIR"
-        TMP=$(mktemp -d)
-        curl -fLo "$TMP/${FONT_NAME}.zip" \
-            "https://github.com/ryanoasis/nerd-fonts/releases/latest/download/${FONT_NAME}.zip"
-        sudo unzip -q "$TMP/${FONT_NAME}.zip" '*.ttf' -d "$FONT_DIR"
-        rm -rf "$TMP"
-        sudo fc-cache -f "$FONT_DIR"
-        ok "$FONT_NAME Nerd Font installed"
-    fi
-fi
-
-warn "Remember to set your terminal font to '${FONT_NAME} Nerd Font'"

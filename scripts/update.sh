@@ -119,11 +119,21 @@ if [[ -d "$PATCHES_DIR" ]]; then
         for patch_file in "$bundle_patch_dir"*.patch; do
             [[ -f "$patch_file" ]] || continue
             patch_name="$(basename "$patch_file" .patch)"
-            if git -C "$bundle_path" apply --check --reverse "$patch_file" &>/dev/null; then
-                ok "$bundle/$patch_name merged upstream — delete $patch_file"
-            elif git -C "$bundle_path" apply --check "$patch_file" &>/dev/null; then
+            if git -C "$bundle_path" apply --check "$patch_file" &>/dev/null; then
                 git -C "$bundle_path" apply "$patch_file" &>/dev/null
                 ok "$bundle/$patch_name (patch applied)"
+            elif git -C "$bundle_path" apply --check --reverse "$patch_file" &>/dev/null; then
+                # The change is present in the working tree, which has two very
+                # different causes: upstream took the change, or this patch is
+                # simply still applied because the reset above did not run (a
+                # plugin that failed to update keeps its patched worktree).
+                # Only a clean worktree shows upstream actually took it, so
+                # nothing tells you to delete a patch that is still doing work.
+                if git -C "$bundle_path" diff --quiet &>/dev/null; then
+                    ok "$bundle/$patch_name merged upstream — delete $patch_file"
+                else
+                    ok "$bundle/$patch_name (already applied)"
+                fi
             else
                 warn "$bundle/$patch_name patch does not apply — manual fix needed"
             fi

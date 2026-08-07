@@ -12,7 +12,7 @@ index bc08410..a4e923d 100644
        -- Fallback if image.nvim fails
        vim.api.nvim_buf_set_lines(buf, -1, -1, false, {
 diff --git a/lua/diagram/init.lua b/lua/diagram/init.lua
-index de5e8f3..0638aa0 100644
+index de5e8f3..0c48c69 100644
 --- a/lua/diagram/init.lua
 +++ b/lua/diagram/init.lua
 @@ -84,6 +84,15 @@ local render_buffer = function(bufnr, winnr, integration)
@@ -37,10 +37,24 @@ index de5e8f3..0638aa0 100644
          y = diagram_row,
 -        render_offset_top = 1,
 +        render_offset_top = -1,
-+        existing_lines = block_lines,
++        overlap = block_lines,
        })
        diagram.image = image
  
+diff --git a/lua/diagram/integrations/markdown.lua b/lua/diagram/integrations/markdown.lua
+index 0fa4ece..5a229c7 100644
+--- a/lua/diagram/integrations/markdown.lua
++++ b/lua/diagram/integrations/markdown.lua
+@@ -22,7 +22,8 @@ M.query_buffer_diagrams = function(bufnr)
+   end
+ 
+   local buf = bufnr or vim.api.nvim_get_current_buf()
+-  local parser = vim.treesitter.get_parser(buf, "markdown")
++  local ok, parser = pcall(vim.treesitter.get_parser, buf, "markdown")
++  if not ok or not parser then return {} end
+   parser:parse(true)
+ 
+   local root = parser:parse()[1]:root()
 diff --git a/lua/diagram/renderers/mermaid.lua b/lua/diagram/renderers/mermaid.lua
 index 5305a59..72fd279 100644
 --- a/lua/diagram/renderers/mermaid.lua

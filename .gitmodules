@@ -66,8 +66,8 @@
 	url = git@github.com:charlesg3/claude-status.git
 [submodule "bundle/image.nvim"]
 	path = bundle/image.nvim
-	url = https://github.com/charlesg3/image.nvim.git
-	branch = combined
+	url = https://github.com/3rd/image.nvim.git
+	branch = master
 [submodule "bundle/diagram.nvim"]
 	path = bundle/diagram.nvim
 	url = https://github.com/charlesg3/diagram.nvim.git

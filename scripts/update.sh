@@ -26,9 +26,13 @@ header "Nvim"
 
 CURRENT=$(nvim --version 2>/dev/null | head -1 | grep -oE 'v[0-9]+\.[0-9]+\.[0-9]+' || echo "")
 _spin "nvim"
-LATEST=$(curl -fsSLI -o /dev/null -w '%{url_effective}' \
-    https://github.com/neovim/neovim/releases/latest 2>/dev/null \
-    | grep -oE 'v[0-9]+\.[0-9]+\.[0-9]+' || echo "")
+# Ask api.github.com rather than following the github.com /releases/latest
+# redirect: some networks serve 503 for github.com while leaving the API
+# reachable, and there the redirect trick reports "could not check latest"
+# forever. The same response carries the asset ids used to download below.
+NVIM_RELEASE=$(curl -fsSL --max-time 20 \
+    https://api.github.com/repos/neovim/neovim/releases/latest 2>/dev/null || echo "")
+LATEST=$(printf '%s' "$NVIM_RELEASE" | jq -r '.tag_name // empty' 2>/dev/null || echo "")
 _clear_spin
 
 if [[ -z "$LATEST" ]]; then
@@ -44,8 +48,16 @@ else
     warn "nvim ${YELLOW}$CURRENT → $LATEST${RESET}, downloading..."
     TMP=$(mktemp -d)
     ARCH=$(uname -m)
-    if curl -fsSLo "$TMP/nvim.tar.gz" \
-        "https://github.com/neovim/neovim/releases/latest/download/nvim-linux-${ARCH}.tar.gz"; then
+    # Fetch through the API asset endpoint, which redirects to
+    # release-assets.githubusercontent.com. The plain
+    # github.com/.../releases/latest/download/... URL is 503 on networks that
+    # block github.com itself.
+    ASSET_ID=$(printf '%s' "$NVIM_RELEASE" \
+        | jq -r --arg n "nvim-linux-${ARCH}.tar.gz" \
+              '.assets[] | select(.name == $n) | .id' 2>/dev/null | head -1)
+    if [[ -n "$ASSET_ID" ]] && curl -fsSLo "$TMP/nvim.tar.gz" \
+        -H "Accept: application/octet-stream" \
+        "https://api.github.com/repos/neovim/neovim/releases/assets/${ASSET_ID}"; then
         sudo tar -xzf "$TMP/nvim.tar.gz" -C /usr/local --strip-components=1
         updated "nvim ${YELLOW}$CURRENT → $LATEST${RESET}"
     else

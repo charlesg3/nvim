@@ -574,7 +574,8 @@ if vim.env.KITTY_PID or vim.env.KITTY_WINDOW_ID then
         filetypes = { 'markdown' },
       },
     },
-    max_height_window_percentage = 50,
+    max_height_window_percentage = 95,
+    max_width_window_percentage = 95,
     window_overlap_clear_enabled = true,
     window_overlap_clear_ft_ignore = { 'NvimTree' },
   })
@@ -593,7 +594,7 @@ if vim.env.KITTY_PID or vim.env.KITTY_WINDOW_ID then
       mermaid = {
         background = '#1A1B1C',
         theme = 'dark',
-        width = 2400,
+        width = 4800,
         cli_args = {
           '-p', vim.fn.stdpath('config') .. '/puppeteer-config.json',
           '--configFile', vim.fn.stdpath('config') .. '/mermaid-config.json',

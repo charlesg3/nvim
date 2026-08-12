@@ -18,7 +18,7 @@
 "
 set nowritebackup
 
-set mouse-=a
+set mouse=
 
 set backupdir=/tmp
 set ss=1                        " Nice sidescroll set siso=9                      " Even nicer sidescroll ;)

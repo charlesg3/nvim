@@ -19,7 +19,7 @@
 "set nowritebackup
 
 
-set mouse-=a
+set mouse=
 set clipboard=unnamedplus
 
 set backupdir=/tmp

@@ -19,7 +19,13 @@
 "set nowritebackup
 
 
-set mouse=
+" Neovim's own default. Clicks in a :terminal reach the program running there
+" only when that program has asked for mouse events; when it has not, the click
+" is handled as it would be in an ordinary buffer, which is why ctrl-click used
+" to report a missing tags file. The two maps below are that case, not the mouse.
+set mouse=nvi
+noremap <C-LeftMouse> <Nop>
+noremap <C-RightMouse> <Nop>
 set clipboard=unnamedplus
 
 set backupdir=/tmp

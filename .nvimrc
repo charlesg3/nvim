@@ -18,7 +18,10 @@
 "
 set nowritebackup
 
-set mouse=
+" See init.vim: on, with ctrl-click's tag jump taken out of the way.
+set mouse=nvi
+noremap <C-LeftMouse> <Nop>
+noremap <C-RightMouse> <Nop>
 
 set backupdir=/tmp
 set ss=1                        " Nice sidescroll set siso=9                      " Even nicer sidescroll ;)

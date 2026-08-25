@@ -28,6 +28,8 @@ noremap <C-LeftMouse> <Nop>
 noremap <C-RightMouse> <Nop>
 set clipboard=unnamedplus
 
+set shell=/usr/bin/zsh          " :terminal uses zsh instead of $SHELL/sh
+
 set backupdir=/tmp
 set ss=1                        " Nice sidescroll set siso=9                      " Even nicer sidescroll ;)
 set nowrap                      " dont wrap lines
